@@ -557,6 +557,7 @@ export default function FocusModeView() {
 
         {/* Reset Session button at bottom */}
         <Box
+          id="reset-session-container"
           className="px-6"
           sx={{
             borderTop: `1px solid ${dividerColor}`,
@@ -568,6 +569,7 @@ export default function FocusModeView() {
           }}>
           <Button
             variant="text"
+            id="reset-session-button"
             startIcon={<RefreshIcon fontSize="small" />}
             onClick={handleReset}
             sx={{
