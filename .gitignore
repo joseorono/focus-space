@@ -35,3 +35,18 @@ dist/
 .tsbuildinfo
 
 .gemini
+
+# AI
+.claude
+.windsurf
+.agents
+
+# Claude Code
+.claude/settings.local.json
+.claude/*.local.json
+.claude/.credentials.json
+.claude/projects/
+.claude/todos/
+.claude/shell-snapshots/
+.claude/statsig/
+CLAUDE.local.md
