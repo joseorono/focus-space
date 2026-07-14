@@ -11,22 +11,24 @@ import Divider from "@mui/material/Divider";
 import Fade from "@mui/material/Fade";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-
-
 import ViewContainer from "~components/view-container";
 import { FOCUS_VIEW_TRANSITION_DURATION } from "~constants";
-import { addTask, copyPastTask, deleteTask, setCurrentTaskIndex, updateTask } from "~store/features/focus/focusSlice";
+import {
+  addTask,
+  copyPastTask,
+  deleteTask,
+  setCurrentTaskIndex,
+  updateTask
+} from "~store/features/focus/focusSlice";
 import type { RootState } from "~store/store";
-
-
-
+import type { ToDoTask } from "~types/focus";
 
 interface TaskSelectionViewProps {
   onTaskSelect: (taskIndex: number) => void;
@@ -42,11 +44,15 @@ export default function TaskSelectionView({
   const focus = useSelector((state: RootState) => state.focus);
   const [newTaskName, setNewTaskName] = useState("");
   const [newTaskPoms, setNewTaskPoms] = useState("1");
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
   const activeTasks = focus.tasks.filter((task) => !task.completed);
   const currentTaskIndex = focus.currentTaskIndex;
 
   const isDarkMode: boolean = theme.palette.mode === "dark";
-  const hoverBackgroundColor: string = isDarkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)";
+  const hoverBackgroundColor: string = isDarkMode
+    ? "rgba(255, 255, 255, 0.08)"
+    : "rgba(0, 0, 0, 0.04)";
 
   const handleAddTask = () => {
     if (newTaskName.trim() && parseInt(newTaskPoms) > 0) {
@@ -73,6 +79,27 @@ export default function TaskSelectionView({
     dispatch(copyPastTask(taskId));
   };
 
+  const handleStartEditing = (
+    task: ToDoTask,
+    event: React.MouseEvent<HTMLElement>
+  ) => {
+    event.stopPropagation();
+    setEditingTaskId(task.id);
+    setEditingName(task.name);
+  };
+
+  const handleSaveEdit = (taskId: string) => {
+    const trimmed = editingName.trim();
+    if (trimmed) {
+      dispatch(updateTask({ id: taskId, updates: { name: trimmed } }));
+    }
+    setEditingTaskId(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTaskId(null);
+  };
+
   const formatCompletionTime = (timestamp: number | undefined): string => {
     if (!timestamp) return "";
     const now = Date.now();
@@ -90,10 +117,9 @@ export default function TaskSelectionView({
     <Fade in timeout={FOCUS_VIEW_TRANSITION_DURATION}>
       <ViewContainer className="px-0">
         {/* Header with Tasks title and Timer button */}
-        <div 
-          id="task-selection-top-bar" 
-          className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 py-2 px-6"
-        >
+        <div
+          id="task-selection-top-bar"
+          className="flex items-center justify-between border-b border-gray-200 px-6 py-2 dark:border-gray-700">
           <Stack
             direction="column"
             spacing={0.75}
@@ -101,7 +127,7 @@ export default function TaskSelectionView({
               mb: 0.5,
               justifyContent: "space-between",
               alignItems: "start",
-              py: 0,
+              py: 0
             }}>
             <Typography
               variant="h6"
@@ -146,10 +172,10 @@ export default function TaskSelectionView({
         {/* Add Task Form */}
         <Box
           id="add-task-form"
-          className="mx-4 border border-gray-200 dark:border-gray-700 rounded-xl p-3 mt-4 transition-all duration-200 ease-in-out hover:border-blue-300 hover:shadow-sm dark:hover:border-blue-600"
+          className="mx-4 mt-4 rounded-xl border border-gray-200 p-3 transition-all duration-200 ease-in-out hover:border-blue-300 hover:shadow-sm dark:border-gray-700 dark:hover:border-blue-600"
           sx={{
             mb: 2,
-            backgroundColor: 'background.paper'
+            backgroundColor: "background.paper"
           }}>
           <Typography
             variant="caption"
@@ -245,7 +271,9 @@ export default function TaskSelectionView({
           ) : (
             <>
               {activeTasks.map((task) => {
-                const taskIndex = focus.tasks.findIndex((t) => t.id === task.id);
+                const taskIndex = focus.tasks.findIndex(
+                  (t) => t.id === task.id
+                );
                 const isSelected = taskIndex === currentTaskIndex;
                 return (
                   <Stack
@@ -253,24 +281,49 @@ export default function TaskSelectionView({
                     direction="row"
                     spacing={1}
                     className={`flex items-start gap-1 rounded-xl border border-gray-200 p-3 transition-all duration-200 ease-in-out hover:border-blue-300 hover:shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600 ${
-                      isSelected ? 'border-blue-500 dark:border-blue-500' : ''
+                      isSelected ? "border-blue-500 dark:border-blue-500" : ""
                     }`}
                     sx={{
                       alignItems: "center",
-                      backgroundColor: 'background.paper',
+                      backgroundColor: "background.paper",
                       cursor: "pointer"
                     }}
                     onClick={() => onTaskSelect(taskIndex)}>
                     <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: "text.primary",
-                          fontWeight: isSelected ? 500 : 400,
-                          textDecoration: task.completed ? "line-through" : "none"
-                        }}>
-                        {task.name}
-                      </Typography>
+                      {editingTaskId === task.id ? (
+                        <TextField
+                          size="small"
+                          autoFocus
+                          fullWidth
+                          value={editingName}
+                          onChange={(e) => setEditingName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSaveEdit(task.id);
+                            if (e.key === "Escape") handleCancelEdit();
+                          }}
+                          onBlur={() => handleSaveEdit(task.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              fontSize: "0.875rem"
+                            }
+                          }}
+                        />
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          onClick={(e) => handleStartEditing(task, e)}
+                          sx={{
+                            color: "text.primary",
+                            fontWeight: isSelected ? 500 : 400,
+                            textDecoration: task.completed
+                              ? "line-through"
+                              : "none",
+                            cursor: "text"
+                          }}>
+                          {task.name}
+                        </Typography>
+                      )}
                       <Typography variant="caption" color="text.secondary">
                         {task.pomsTaken} / {task.pomsExpected} pomodoros
                       </Typography>
@@ -325,7 +378,7 @@ export default function TaskSelectionView({
                       className="flex items-start gap-3 rounded-xl border border-gray-200 p-3 transition-all duration-200 ease-in-out hover:border-blue-300 hover:shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600"
                       sx={{
                         alignItems: "center",
-                        backgroundColor: 'background.paper',
+                        backgroundColor: "background.paper",
                         opacity: 0.7
                       }}>
                       <Box sx={{ flex: 1 }}>
