@@ -34,32 +34,7 @@ const initialState: FocusState = {
   sessionsCompleted: 0,
   currentSessionStartTime: null,
   currentTaskIndex: 0,
-  tasks: [
-    {
-      id: "1",
-      name: "Task 1",
-      pomsExpected: 4,
-      pomsTaken: 0,
-      completed: false,
-      createdAt: Date.now() - 3000
-    },
-    {
-      id: "2",
-      name: "Task 2",
-      pomsExpected: 2,
-      pomsTaken: 0,
-      completed: false,
-      createdAt: Date.now() - 2000
-    },
-    {
-      id: "3",
-      name: "Task 3",
-      pomsExpected: 3,
-      pomsTaken: 0,
-      completed: false,
-      createdAt: Date.now() - 1000
-    }
-  ],
+  tasks: [],
   pastTasks: [],
   settings: {
     workDuration: DEFAULT_WORK_MINUTES * 60,
@@ -150,10 +125,13 @@ export const focusSlice = createSlice({
         // Completing a break (short or long)
         state.timerMode = "work";
         state.timeRemaining = state.settings.workDuration;
-        
+
         // Reset sessions counter after completing a long break
         // This ensures the counter cycles: 1/4, 2/4, 3/4, 4/4, then back to 0/4
-        if (state.timerMode === "work" && state.sessionsCompleted >= state.settings.sessionsUntilLongBreak) {
+        if (
+          state.timerMode === "work" &&
+          state.sessionsCompleted >= state.settings.sessionsUntilLongBreak
+        ) {
           state.sessionsCompleted = 0;
         }
       }
