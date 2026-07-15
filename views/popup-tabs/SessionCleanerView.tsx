@@ -108,7 +108,7 @@ export default function SessionCleanerView() {
       />
 
       {/* Auto-check indicator */}
-      <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ mb: 1, display: "flex", alignItems: "center", gap: 1 }}>
         <FiberManualRecordIcon
           sx={{
             fontSize: "0.75rem",
@@ -203,13 +203,19 @@ export default function SessionCleanerView() {
       {/* Display tabs with keywords indicator */}
       {(hasTabsWithKeywords || isLoadingPersistedTabs) && (
         <Card sx={{ mb: 2, backgroundColor: "rgba(255, 193, 7, 0.1)" }}>
-          <CardContent>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              px: 2,
+              py: 1
+            }}>
             <Typography variant="body2" sx={{ color: "warning.light" }}>
               ⚠️ Found {tabsWithKeywords.length} tab
               {tabsWithKeywords.length !== 1 ? "s" : ""} with distracting
               content
             </Typography>
-          </CardContent>
+          </Box>
         </Card>
       )}
 
