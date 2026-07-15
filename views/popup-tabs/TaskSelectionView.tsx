@@ -292,9 +292,8 @@ export default function TaskSelectionView({
                     <Box sx={{ flex: 1 }}>
                       {editingTaskId === task.id ? (
                         <TextField
-                          size="small"
                           autoFocus
-                          fullWidth
+                          variant="standard"
                           value={editingName}
                           onChange={(e) => setEditingName(e.target.value)}
                           onKeyDown={(e) => {
@@ -304,8 +303,15 @@ export default function TaskSelectionView({
                           onBlur={() => handleSaveEdit(task.id)}
                           onClick={(e) => e.stopPropagation()}
                           sx={{
-                            "& .MuiOutlinedInput-root": {
-                              fontSize: "0.875rem"
+                            width: "100%",
+                            "& .MuiInput-root": {
+                              fontSize: "0.875rem",
+                              marginTop: 0
+                            },
+                            "& .MuiInput-input": {
+                              padding: "2px 0",
+                              height: "auto",
+                              lineHeight: 1.43
                             }
                           }}
                         />
