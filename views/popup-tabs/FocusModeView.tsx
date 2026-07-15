@@ -387,7 +387,7 @@ export default function FocusModeView() {
             spacing={1}
             sx={{
               mt: 1,
-              mb: 4,
+              mb: 1.75,
               justifyContent: "center",
               borderRadius: "9999px",
               width: "fit-content",
