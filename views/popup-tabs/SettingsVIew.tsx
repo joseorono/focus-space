@@ -88,7 +88,7 @@ export default function SettingsView() {
   };
 
   return (
-    <ViewContainer>
+    <ViewContainer className="pb-1">
       <ViewHeader
         title="Settings"
         subtitle="Configure which content to clean from your browser"
