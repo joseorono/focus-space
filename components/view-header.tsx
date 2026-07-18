@@ -12,7 +12,7 @@ interface ViewHeaderProps {
  */
 export default function ViewHeader({ title, subtitle }: ViewHeaderProps) {
   return (
-    <Box sx={{ mb: 2 }}>
+    <Box sx={{ mb: 0.5 }}>
       <Typography
         variant="h6"
         sx={{ fontWeight: 600, mb: 0.5, fontSize: "1rem" }}>

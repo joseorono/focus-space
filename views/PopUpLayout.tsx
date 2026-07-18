@@ -3,19 +3,16 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import StorageIcon from "@mui/icons-material/Storage";
 import TimerIcon from "@mui/icons-material/Timer";
 import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
-import { useTheme } from "@mui/material/styles";
 import * as React from "react";
-
-
 
 import CleanerView from "./popup-tabs/CleanerView";
 import FocusModeView from "./popup-tabs/FocusModeView";
 import SessionCleanerView from "./popup-tabs/SessionCleanerView";
 import SettingsView from "./popup-tabs/SettingsVIew";
-
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -32,6 +29,7 @@ function CustomTabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
+      style={{ height: "100%" }}
       {...other}>
       {value === index && children}
     </div>
@@ -54,7 +52,9 @@ export default function PopUpLayout() {
       ? "1px solid rgba(255, 255, 255, 0.12)"
       : "1px solid rgba(0, 0, 0, 0.08)";
   const tabHoverBackgroundColor: string =
-    theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.04)";
+    theme.palette.mode === "dark"
+      ? "rgba(255, 255, 255, 0.05)"
+      : "rgba(0, 0, 0, 0.04)";
   const tabSelectedBackgroundColor: string =
     theme.palette.mode === "dark"
       ? "rgba(59, 130, 246, 0.2)"
@@ -78,15 +78,15 @@ export default function PopUpLayout() {
           flex: 1,
           minHeight: 0,
           overflow: "hidden",
-          backgroundColor: "background.paper",
+          backgroundColor: "background.paper"
         }}>
-        <div 
-         className="mx-4 mt-2 border-rounded" 
-         style={{
-          borderBottom: tabsWrapperBorderBottom,
-          borderRadius: "12px",
-          overflow: "hidden"
-         }}>
+        <div
+          className="border-rounded mx-4 mt-2"
+          style={{
+            borderBottom: tabsWrapperBorderBottom,
+            borderRadius: "12px",
+            overflow: "hidden"
+          }}>
           <Tabs
             value={value}
             onChange={handleChange}
@@ -94,7 +94,7 @@ export default function PopUpLayout() {
             variant="fullWidth"
             TabIndicatorProps={{
               sx: {
-                display: "none",
+                display: "none"
               }
             }}
             sx={{
@@ -125,7 +125,7 @@ export default function PopUpLayout() {
                   opacity: 1,
                   borderRadius: "12px",
                   borderBottom: `2px solid ${tabSelectedBorderBottomColor}`,
-                  zIndex: 2,
+                  zIndex: 2
                 },
                 "& .MuiTab-root": {
                   minHeight: "44px",
@@ -168,7 +168,13 @@ export default function PopUpLayout() {
 
         <Box
           id="tabViewContainer"
-          sx={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto",
+            overflowX: "hidden"
+          }}>
           <CustomTabPanel value={value} index={0}>
             <FocusModeView />
           </CustomTabPanel>

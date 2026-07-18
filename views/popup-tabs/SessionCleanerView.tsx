@@ -1,5 +1,5 @@
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+// import NotificationsIcon from "@mui/icons-material/Notifications";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -8,7 +8,7 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 
 import ViewHeader from "~/components/view-header";
@@ -108,7 +108,7 @@ export default function SessionCleanerView() {
       />
 
       {/* Auto-check indicator */}
-      <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ mb: 1, display: "flex", alignItems: "center", gap: 1 }}>
         <FiberManualRecordIcon
           sx={{
             fontSize: "0.75rem",
@@ -130,9 +130,9 @@ export default function SessionCleanerView() {
       </Box>
 
       {/* Display selected categories */}
-      <Card 
-        sx={{ 
-          mb: 3, 
+      <Card
+        sx={{
+          mb: 2,
           transition: 'all 0.2s ease-in-out',
           '&:hover': {
             borderColor: 'primary.light',
@@ -202,18 +202,24 @@ export default function SessionCleanerView() {
 
       {/* Display tabs with keywords indicator */}
       {(hasTabsWithKeywords || isLoadingPersistedTabs) && (
-        <Card sx={{ mb: 3, backgroundColor: "rgba(255, 193, 7, 0.1)" }}>
-          <CardContent>
+        <Card sx={{ mb: 2, backgroundColor: "rgba(255, 193, 7, 0.1)" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              px: 2,
+              py: 1
+            }}>
             <Typography variant="body2" sx={{ color: "warning.light" }}>
               ⚠️ Found {tabsWithKeywords.length} tab
               {tabsWithKeywords.length !== 1 ? "s" : ""} with distracting
               content
             </Typography>
-          </CardContent>
+          </Box>
         </Card>
       )}
 
-      <Stack spacing={3} sx={{ alignItems: "center", pt: 2 }}>
+      <Stack spacing={2} sx={{ alignItems: "center", pt: 2, pb: 2 }}>
         {/* Main session cleaner button */}
         <SessionCleanerButton
           onClick={handleCleanSession}
@@ -231,7 +237,7 @@ export default function SessionCleanerView() {
             : `Currently open tabs with distractions: ${tabsWithKeywords.length}`}
         </Typography>
 
-        {/* Test notification button */}
+        {/* Test notification button
         <Button
           variant="contained"
           color="secondary"
@@ -243,6 +249,7 @@ export default function SessionCleanerView() {
           }}>
           Test Notification
         </Button>
+        */}
       </Stack>
     </ViewContainer>
   );

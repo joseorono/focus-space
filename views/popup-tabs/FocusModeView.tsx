@@ -22,9 +22,9 @@ import Fade from "@mui/material/Fade";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useTheme } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -94,15 +94,33 @@ export default function FocusModeView() {
   const [autoBreak, setAutoBreak] = useState(false);
   const [showTaskSelection, setShowTaskSelection] = useState(false);
   const isDarkMode: boolean = theme.palette.mode === "dark";
-  const dividerColor: string = isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)";
-  const hoverBackgroundColor: string = isDarkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)";
-  const modeSelectorBackgroundColor: string = isDarkMode ? "#181e27" : "rgba(15, 23, 42, 0.06)";
-  const modeOptionSelectedBackgroundColor: string = isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.06)";
-  const modeOptionHoverBackgroundColor: string = isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.04)";
-  const modeOptionSelectedHoverBackgroundColor: string = isDarkMode ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.08)";
-  const outlinedButtonBorderColor: string = isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.12)";
-  const outlinedButtonHoverBorderColor: string = isDarkMode ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)";
-  const outlinedButtonHoverBackgroundColor: string = isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)";
+  const dividerColor: string = isDarkMode
+    ? "rgba(255,255,255,0.1)"
+    : "rgba(0,0,0,0.08)";
+  const hoverBackgroundColor: string = isDarkMode
+    ? "rgba(255, 255, 255, 0.08)"
+    : "rgba(0, 0, 0, 0.04)";
+  const modeSelectorBackgroundColor: string = isDarkMode
+    ? "#181e27"
+    : "rgba(15, 23, 42, 0.06)";
+  const modeOptionSelectedBackgroundColor: string = isDarkMode
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.06)";
+  const modeOptionHoverBackgroundColor: string = isDarkMode
+    ? "rgba(255, 255, 255, 0.05)"
+    : "rgba(0, 0, 0, 0.04)";
+  const modeOptionSelectedHoverBackgroundColor: string = isDarkMode
+    ? "rgba(255, 255, 255, 0.15)"
+    : "rgba(0, 0, 0, 0.08)";
+  const outlinedButtonBorderColor: string = isDarkMode
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.12)";
+  const outlinedButtonHoverBorderColor: string = isDarkMode
+    ? "rgba(255, 255, 255, 0.2)"
+    : "rgba(0, 0, 0, 0.2)";
+  const outlinedButtonHoverBackgroundColor: string = isDarkMode
+    ? "rgba(255, 255, 255, 0.05)"
+    : "rgba(0, 0, 0, 0.03)";
 
   // Watch for storage changes from background timer
   useEffect(() => {
@@ -250,9 +268,17 @@ export default function FocusModeView() {
 
   return (
     <Fade in timeout={FOCUS_VIEW_TRANSITION_DURATION}>
-      <ViewContainer className="px-0">
+      <ViewContainer
+        className="px-0"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%"
+        }}>
         {/* Current Task Title and Change Button */}
-        <div id="focus-mode-top-bar" className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 py-2 px-6">
+        <div
+          id="focus-mode-top-bar"
+          className="flex items-center justify-between border-b border-gray-200 px-6 py-2 dark:border-gray-700">
           <Stack
             className=""
             direction="column"
@@ -261,7 +287,7 @@ export default function FocusModeView() {
               mb: 0.5,
               justifyContent: "space-between",
               alignItems: "start",
-              py: 0,
+              py: 0
             }}>
             <Typography
               variant="h6"
@@ -291,7 +317,7 @@ export default function FocusModeView() {
                 mt: 0,
                 pb: 0.75,
                 mb: 1,
-                gap: 0.25,
+                gap: 0.25
                 // borderBottom: `1px solid ${dividerColor}`
               }}>
               {currentTask ? (
@@ -332,259 +358,273 @@ export default function FocusModeView() {
           </Stack>
           {/* Task Progress Indicator */}
           <Button
-              size="small"
-              onClick={handleShowTaskSelection}
-              endIcon={<SwapHorizIcon sx={{ fontSize: 20 }} />}
-              sx={{
-                color: "text.secondary",
-                textTransform: "none",
-                fontSize: "0.8rem",
-                px: 1,
-                py: 0,
-                minWidth: "auto",
-                height: 32,
-                display: "flex",
-                alignItems: "center",
-                "&:hover": {
-                  backgroundColor: hoverBackgroundColor
-                }
-              }}>
-              Tasks
-            </Button>
-        </div>
-
-        {/* Mode Selector */}
-        <Stack
-          id="modeSelectorBottons"
-          direction="row"
-          spacing={1}
-          sx={{
-            mb: 4,
-            justifyContent: "center",
-            borderRadius: "9999px",
-            width: "fit-content",
-            mx: "auto",
-            backgroundColor: modeSelectorBackgroundColor,
-            p: 1
-          }}>
-          {[
-            { id: "work", label: "Deep Work", color: "#ef5350" },
-            { id: "shortBreak", label: "Short", color: "#66bb6a" },
-            { id: "longBreak", label: "Long", color: "#42a5f5" }
-          ].map((mode) => (
-            <Box
-              key={mode.id}
-              onClick={() => handleModeSwitch(mode.id as TimerMode)}
-              sx={{
-                px: 2,
-                py: 0.75,
-                borderRadius: "9999px",
-                cursor: "pointer",
-                backgroundColor: focus.timerMode === mode.id ? modeOptionSelectedBackgroundColor : "transparent",
-                transition: "all 0.2s ease",
-                "&:hover": {
-                  backgroundColor: focus.timerMode === mode.id ? modeOptionSelectedHoverBackgroundColor : modeOptionHoverBackgroundColor
-                }
-              }}>
-              <Typography
-                sx={{
-                  fontSize: "0.8rem",
-                  fontWeight: 600,
-                  color:
-                    focus.timerMode === mode.id ? mode.color : "text.secondary",
-                  transition: "color 0.2s ease"
-                }}>
-                {mode.label}
-              </Typography>
-            </Box>
-          ))}
-        </Stack>
-
-        {/* Timer Display with Circular Progress */}
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            mb: 2
-          }}>
-          <Box sx={{ position: "relative", display: "inline-flex", mb: 2 }}>
-            {/* Circular Progress Ring */}
-            <svg
-              width="220"
-              height="220"
-              style={{ transform: "rotate(-90deg)" }}>
-              {/* Background circle */}
-              <circle
-                cx="110"
-                cy="110"
-                r="100"
-                fill="none"
-                stroke="rgba(66, 165, 245, 0.2)"
-                strokeWidth="6"
-              />
-              {/* Progress circle */}
-              <circle
-                cx="110"
-                cy="110"
-                r="100"
-                fill="none"
-                stroke={modeColor}
-                strokeWidth="6"
-                strokeDasharray={`${2 * Math.PI * 100}`}
-                strokeDashoffset={`${2 * Math.PI * 100 * (1 - progress / 100)}`}
-                strokeLinecap="round"
-              />
-            </svg>
-
-            {/* Timer text in center */}
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                textAlign: "center"
-              }}>
-              <Typography
-                variant="h2"
-                sx={{
-                  fontWeight: 300,
-                  fontSize: "3rem",
-                  color: modeColor,
-                  letterSpacing: "-0.02em"
-                }}>
-                {formatTime(focus.timeRemaining)}
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Control Buttons below timer */}
-          <Stack direction="row" spacing={1.5}>
-            {/* Stop button */}
-            <IconButton
-              onClick={handleReset}
-              sx={{
-                width: 48,
-                height: 48,
-                backgroundColor: modeColor,
-                color: "white",
-                "&:hover": {
-                  backgroundColor: modeColor,
-                  opacity: 0.9
-                }
-              }}>
-              <StopIcon sx={{ fontSize: 24 }} />
-            </IconButton>
-
-            {/* Play/Pause button */}
-            {focus.timerStatus === "running" ? (
-              <IconButton
-                onClick={handlePause}
-                sx={{
-                  width: 48,
-                  height: 48,
-                  backgroundColor: "white",
-                  color: modeColor,
-                  border: `2px solid ${modeColor}`,
-                  "&:hover": {
-                    backgroundColor: "rgba(255, 255, 255, 0.9)"
-                  }
-                }}>
-                <PauseIcon sx={{ fontSize: 24 }} />
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={handleStart}
-                sx={{
-                  width: 48,
-                  height: 48,
-                  backgroundColor: "white",
-                  color: modeColor,
-                  border: `2px solid ${modeColor}`,
-                  "&:hover": {
-                    backgroundColor: "rgba(255, 255, 255, 0.9)"
-                  }
-                }}>
-                <PlayArrowIcon sx={{ fontSize: 24 }} />
-              </IconButton>
-            )}
-          </Stack>
-        </Box>
-
-        {/* Done and Switch Task buttons */}
-        <Stack
-          direction="row"
-          spacing={1.5}
-          sx={{ mb: 2, justifyContent: "center" }}>
-          <Button
-            variant="outlined"
-            startIcon={<CheckIcon fontSize="small" />}
-            onClick={handleDoneTask}
-            sx={{
-              color: "text.secondary",
-              borderColor: outlinedButtonBorderColor,
-              borderRadius: "12px",
-              px: 3,
-              py: 1,
-              "&:hover": {
-                borderColor: outlinedButtonHoverBorderColor,
-                backgroundColor: outlinedButtonHoverBackgroundColor
-              }
-            }}>
-            Done
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<SwapHorizIcon fontSize="small" />}
-            onClick={handleSwitchTask}
-            sx={{
-              color: "text.secondary",
-              borderColor: outlinedButtonBorderColor,
-              borderRadius: "12px",
-              px: 3,
-              py: 1,
-              "&:hover": {
-                borderColor: outlinedButtonHoverBorderColor,
-                backgroundColor: outlinedButtonHoverBackgroundColor
-              }
-            }}>
-            Switch task
-          </Button>
-        </Stack>
-
-        {/* Reset Session button at bottom */}
-        <Box
-          className="px-6"
-          sx={{
-            borderTop: `1px solid ${dividerColor}`,
-            pt: 1.5,
-            pb: 1.5,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between"
-          }}>
-          <Button
-            variant="text"
-            startIcon={<RefreshIcon fontSize="small" />}
-            onClick={handleReset}
+            size="small"
+            onClick={handleShowTaskSelection}
+            endIcon={<SwapHorizIcon sx={{ fontSize: 20 }} />}
             sx={{
               color: "text.secondary",
               textTransform: "none",
-              fontSize: "0.75rem",
-              py: 0.5,
-              px: 1
+              fontSize: "0.8rem",
+              px: 1,
+              py: 0,
+              minWidth: "auto",
+              height: 32,
+              display: "flex",
+              alignItems: "center",
+              "&:hover": {
+                backgroundColor: hoverBackgroundColor
+              }
             }}>
-            Reset Session
+            Tasks
           </Button>
-          <Typography
-            variant="caption"
-            color="textSecondary"
-            sx={{ fontSize: "0.75rem" }}>
-            {focus.sessionsCompleted} / {focus.settings.sessionsUntilLongBreak}
-          </Typography>
+        </div>
+
+        <Box sx={{ flex: 1, overflow: "auto" }}>
+          {/* Mode Selector */}
+          <Stack
+            id="modeSelectorButtons"
+            direction="row"
+            spacing={1}
+            sx={{
+              mt: 1,
+              mb: 1.75,
+              justifyContent: "center",
+              borderRadius: "9999px",
+              width: "fit-content",
+              mx: "auto",
+              backgroundColor: modeSelectorBackgroundColor,
+              p: 1
+            }}>
+            {[
+              { id: "work", label: "Deep Work", color: "#ef5350" },
+              { id: "shortBreak", label: "Short", color: "#66bb6a" },
+              { id: "longBreak", label: "Long", color: "#42a5f5" }
+            ].map((mode) => (
+              <Box
+                key={mode.id}
+                onClick={() => handleModeSwitch(mode.id as TimerMode)}
+                sx={{
+                  px: 2,
+                  py: 0.75,
+                  borderRadius: "9999px",
+                  cursor: "pointer",
+                  backgroundColor:
+                    focus.timerMode === mode.id
+                      ? modeOptionSelectedBackgroundColor
+                      : "transparent",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    backgroundColor:
+                      focus.timerMode === mode.id
+                        ? modeOptionSelectedHoverBackgroundColor
+                        : modeOptionHoverBackgroundColor
+                  }
+                }}>
+                <Typography
+                  sx={{
+                    fontSize: "0.8rem",
+                    fontWeight: 600,
+                    color:
+                      focus.timerMode === mode.id
+                        ? mode.color
+                        : "text.secondary",
+                    transition: "color 0.2s ease"
+                  }}>
+                  {mode.label}
+                </Typography>
+              </Box>
+            ))}
+          </Stack>
+
+          {/* Timer Display with Circular Progress */}
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              mb: 2
+            }}>
+            <Box sx={{ position: "relative", display: "inline-flex", mb: 2 }}>
+              {/* Circular Progress Ring */}
+              <svg
+                width="220"
+                height="220"
+                style={{ transform: "rotate(-90deg)" }}>
+                {/* Background circle */}
+                <circle
+                  cx="110"
+                  cy="110"
+                  r="100"
+                  fill="none"
+                  stroke="rgba(66, 165, 245, 0.2)"
+                  strokeWidth="6"
+                />
+                {/* Progress circle */}
+                <circle
+                  cx="110"
+                  cy="110"
+                  r="100"
+                  fill="none"
+                  stroke={modeColor}
+                  strokeWidth="6"
+                  strokeDasharray={`${2 * Math.PI * 100}`}
+                  strokeDashoffset={`${2 * Math.PI * 100 * (1 - progress / 100)}`}
+                  strokeLinecap="round"
+                />
+              </svg>
+
+              {/* Timer text in center */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  textAlign: "center"
+                }}>
+                <Typography
+                  variant="h2"
+                  sx={{
+                    fontWeight: 300,
+                    fontSize: "3rem",
+                    color: modeColor,
+                    letterSpacing: "-0.02em"
+                  }}>
+                  {formatTime(focus.timeRemaining)}
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Control Buttons below timer */}
+            <Stack direction="row" spacing={1.5}>
+              {/* Stop button */}
+              <IconButton
+                onClick={handleReset}
+                sx={{
+                  width: 48,
+                  height: 48,
+                  backgroundColor: modeColor,
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: modeColor,
+                    opacity: 0.9
+                  }
+                }}>
+                <StopIcon sx={{ fontSize: 24 }} />
+              </IconButton>
+
+              {/* Play/Pause button */}
+              {focus.timerStatus === "running" ? (
+                <IconButton
+                  onClick={handlePause}
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    backgroundColor: "white",
+                    color: modeColor,
+                    border: `2px solid ${modeColor}`,
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 255, 255, 0.9)"
+                    }
+                  }}>
+                  <PauseIcon sx={{ fontSize: 24 }} />
+                </IconButton>
+              ) : (
+                <IconButton
+                  onClick={handleStart}
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    backgroundColor: "white",
+                    color: modeColor,
+                    border: `2px solid ${modeColor}`,
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 255, 255, 0.9)"
+                    }
+                  }}>
+                  <PlayArrowIcon sx={{ fontSize: 24 }} />
+                </IconButton>
+              )}
+            </Stack>
+          </Box>
+
+          {/* Done and Switch Task buttons */}
+          <Stack
+            direction="row"
+            spacing={1.5}
+            sx={{ mb: 2, justifyContent: "center" }}>
+            <Button
+              variant="outlined"
+              startIcon={<CheckIcon fontSize="small" />}
+              onClick={handleDoneTask}
+              sx={{
+                color: "text.secondary",
+                borderColor: outlinedButtonBorderColor,
+                borderRadius: "12px",
+                px: 3,
+                py: 1,
+                "&:hover": {
+                  borderColor: outlinedButtonHoverBorderColor,
+                  backgroundColor: outlinedButtonHoverBackgroundColor
+                }
+              }}>
+              Done
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<SwapHorizIcon fontSize="small" />}
+              onClick={handleSwitchTask}
+              sx={{
+                color: "text.secondary",
+                borderColor: outlinedButtonBorderColor,
+                borderRadius: "12px",
+                px: 3,
+                py: 1,
+                "&:hover": {
+                  borderColor: outlinedButtonHoverBorderColor,
+                  backgroundColor: outlinedButtonHoverBackgroundColor
+                }
+              }}>
+              Switch task
+            </Button>
+          </Stack>
+
+          {/* Reset Session button at bottom */}
+          <Box
+            id="reset-session-container"
+            className="px-6"
+            sx={{
+              borderTop: `1px solid ${dividerColor}`,
+              pt: 1.5,
+              pb: 1.5,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}>
+            <Button
+              variant="text"
+              id="reset-session-button"
+              startIcon={<RefreshIcon fontSize="small" />}
+              onClick={handleReset}
+              sx={{
+                color: "text.secondary",
+                textTransform: "none",
+                fontSize: "0.75rem",
+                py: 0.5,
+                px: 1
+              }}>
+              Reset Session
+            </Button>
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              sx={{ fontSize: "0.75rem" }}>
+              {focus.sessionsCompleted} /{" "}
+              {focus.settings.sessionsUntilLongBreak}
+            </Typography>
+          </Box>
         </Box>
       </ViewContainer>
     </Fade>
