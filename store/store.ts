@@ -7,7 +7,7 @@ import { Storage } from "@plasmohq/storage";
 
 
 import counterReducer, { initializeFromStorage as initializeCounter } from "./features/counter/counterSlice";
-import focusReducer, { initializeFromStorage as initializeFocus } from "./features/focus/focusSlice";
+import focusReducer, { initializeFromStorage as initializeFocus, switchMode } from "./features/focus/focusSlice";
 import settingsReducer, { initializeFromStorage as initializeSettings } from "./features/settings/settingsSlice";
 
 
@@ -38,6 +38,11 @@ async function loadStateFromStorage() {
       store.dispatch(initializeCounter(savedState));
       store.dispatch(initializeSettings(savedState));
       store.dispatch(initializeFocus(savedState));
+
+      const focusState = store.getState().focus;
+      if (focusState.timerStatus !== "running") {
+        store.dispatch(switchMode("work"));
+      }
     }
   } catch (error) {
     console.error("Failed to load state from storage:", error);
