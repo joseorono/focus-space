@@ -27,12 +27,19 @@ async function startBackgroundTimer() {
     Math.floor(BACKGROUND_TIMER_PERSIST_INTERVAL_MS / 1000)
   );
 
+  // Load state once at start and keep in memory for accurate per-second ticking
+  let inMemoryState: ReduxState | null = (await storage.get(
+    "reduxState"
+  )) as ReduxState | null;
+
   timerInterval = setInterval(async () => {
     try {
-      const state = (await storage.get("reduxState")) as ReduxState | null;
-      if (!state || !state.focus) return;
+      if (!inMemoryState || !inMemoryState.focus) {
+        inMemoryState = (await storage.get("reduxState")) as ReduxState | null;
+        if (!inMemoryState || !inMemoryState.focus) return;
+      }
 
-      const focus = state.focus;
+      const focus = inMemoryState.focus;
 
       // Only tick if timer is running and time remaining
       if (focus.timerStatus === "running" && focus.timeRemaining > 0) {
@@ -42,13 +49,15 @@ async function startBackgroundTimer() {
 
         // Check if session completed (reached zero)
         if (newTimeRemaining === 0) {
-          await handleSessionComplete(state);
+          await handleSessionComplete(inMemoryState);
+          // Reload state after session completion
+          inMemoryState = (await storage.get("reduxState")) as ReduxState | null;
         } else {
           persistTickCount += 1;
           // Persist timer state periodically instead of every second
           // to avoid Chrome Storage Sync write quota errors
           if (persistTickCount % persistIntervalTicks === 0) {
-            await storage.set("reduxState", state);
+            await storage.set("reduxState", inMemoryState);
           }
         }
       }
