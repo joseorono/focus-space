@@ -118,7 +118,7 @@ export default function CleanerView() {
         <Stack
           direction="row"
           spacing={1}
-          sx={{ mb: 2, justifyContent: "space-around", borderRadius: "9999px", width: "100%", backgroundColor: selectorBackgroundColor, p: 1 }}>
+          sx={{ mb: 1, justifyContent: "space-around", borderRadius: "9999px", width: "100%", backgroundColor: selectorBackgroundColor, p: 1 }}>
           {[{ id: "15min", label: "Last 15 min" }, { id: "1hour", label: "Last hour" }, { id: "24hours", label: "Last 24 hours" }].map((option) => (
             <Box
               key={option.id}
