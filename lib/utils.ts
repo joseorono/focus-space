@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function openOnboardingTab() {
-  chrome.tabs.create({ url: "/static/onboarding.html" });
+  chrome.tabs.create({ url: chrome.runtime.getURL("static/onboarding.html") });
 }
 
 export function formatCategoryLabel(category: BadKeywordCategory): string {
