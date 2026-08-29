@@ -1,3 +1,5 @@
+/// <reference types="chrome" />
+
 import { Storage } from "@plasmohq/storage";
 
 import {
@@ -16,7 +18,7 @@ interface ReduxState {
 console.log("Background Worker Active. You can now use the extension");
 
 const storage = new Storage();
-let timerInterval: NodeJS.Timeout | null = null;
+let timerInterval: ReturnType<typeof setInterval> | null = null;
 
 // Background timer that persists when popup is closed
 async function startBackgroundTimer() {
@@ -175,8 +177,11 @@ storage.watch({
   }
 })();
 
-chrome.runtime.onInstalled.addListener(({ reason }) => {
-  if (reason === "install") {
-    chrome.tabs.create({ url: "static/onboarding.html" });
+chrome.runtime.onInstalled.addListener(
+  ({ reason }: chrome.runtime.InstalledDetails): void => {
+    if (reason === "install") {
+      const onboardingUrl: string = `${chrome.runtime.getURL("static/onboarding.html")}?v=${Date.now()}`;
+      chrome.tabs.create({ url: onboardingUrl });
+    }
   }
-});
+);
