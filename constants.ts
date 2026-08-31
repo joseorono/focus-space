@@ -22,6 +22,10 @@ export const DEFAULT_SHORT_BREAK_MINUTES = 5;
 export const DEFAULT_LONG_BREAK_MINUTES = 15;
 export const DEFAULT_SESSIONS_UNTIL_LONG_BREAK = 4;
 
+// Storage throttling constants
+export const REDUX_STORAGE_DEBOUNCE_MS = 1000;
+export const BACKGROUND_TIMER_PERSIST_INTERVAL_MS = 5000;
+
 // https://www.cisdem.com/resource/list-of-websites-to-block-at-work.html
 export const nsfwKeywords: string[] = [
   "porn",

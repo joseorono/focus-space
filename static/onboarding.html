@@ -3,322 +3,667 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Welcome to FocusSpace, your private workspace for deep focus."
+    />
     <link rel="stylesheet" href="../style.css" />
     <title>Welcome to FocusSpace</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+      :root {
+        --night: #030e18;
+        --card: #0b1628;
+        --border: #1e293b;
+        --text: #94a3b8;
+        --text-high: #f1f5f9;
+        --blue: #1976d2;
+        --blue-light: #60a5fa;
+        --purple: #8b5cf6;
+        --lilac: #c084fc;
+        --green: #34d399;
+      }
 
       * {
         box-sizing: border-box;
       }
 
       body {
-        font-family: "Roboto", sans-serif;
-        font-weight: 300;
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        color: var(--text);
+        background: var(--night);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         font-size: 16px;
         line-height: 1.6;
-        color: rgb(16, 20, 24);
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        margin: 0;
-        padding: 0;
-        min-height: 100vh;
-        overflow-x: hidden;
-      }
-
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        font-family: "Open Sans", sans-serif;
-        font-weight: 600;
+        -webkit-font-smoothing: antialiased;
       }
 
       /* Animations */
       @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(18px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
-      @keyframes slideInDown {
-        from {
-          opacity: 0;
-          transform: translateY(-20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      @keyframes pulse-dot {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
       }
 
-      @keyframes pulse {
-        0%, 100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.7;
-        }
+      .fade-in-up { animation: fadeInUp 0.65s ease-out both; }
+      .delay-1 { animation-delay: 0.08s; }
+      .delay-2 { animation-delay: 0.16s; }
+      .delay-3 { animation-delay: 0.24s; }
+      .delay-4 { animation-delay: 0.32s; }
+
+      /* Top bar */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+        border-bottom: 1px solid rgba(96, 165, 250, 0.1);
+        background: rgba(3, 14, 24, 0.82);
+        backdrop-filter: blur(14px);
       }
 
-      .hero-icon {
-        animation: pulse 3s ease-in-out infinite;
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text-high);
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        text-decoration: none;
       }
 
-      .fade-in-up {
-        animation: fadeInUp 0.8s ease-out;
-      }
-
-      .slide-in-down {
-        animation: slideInDown 0.6s ease-out;
+      .brand-mark {
+        width: 20px;
+        height: 23px;
+        fill: var(--text-high);
       }
 
       /* Card Styles */
       .card {
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(96, 165, 250, 0.12);
+        border-radius: 20px;
+        background: rgba(11, 22, 40, 0.78);
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+        backdrop-filter: blur(14px);
       }
 
       /* Feature Cards */
       .feature-card {
-        border-radius: 12px;
-        padding: 24px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        min-height: 100%;
+        padding: 22px;
+        border: 1px solid rgba(96, 165, 250, 0.1);
+        border-radius: 16px;
+        background: rgba(30, 41, 59, 0.42);
+        transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
       }
 
       .feature-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        border-color: rgba(96, 165, 250, 0.35);
+        background: rgba(30, 41, 59, 0.7);
+        transform: translateY(-3px);
       }
 
       /* Button Styles */
       .btn {
-        display: inline-block;
-        padding: 12px 28px;
-        border-radius: 8px;
-        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 10px 20px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
         text-decoration: none;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        font-size: 16px;
+        transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
       }
 
+      .btn:hover { transform: translateY(-2px); }
       .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        background: var(--blue);
+        box-shadow: 0 8px 24px rgba(25, 118, 210, 0.3);
       }
-
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-      }
-
+      .btn-primary:hover { opacity: 0.9; }
       .btn-secondary {
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: var(--blue-light);
+        border: 1px solid rgba(96, 165, 250, 0.3);
+        background: rgba(96, 165, 250, 0.08);
+      }
+      .btn-secondary:hover { background: rgba(96, 165, 250, 0.16); }
+      .btn-small {
+        min-height: 36px;
+        padding: 7px 16px;
+        font-size: 13px;
       }
 
-      .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.25);
-        border-color: rgba(255, 255, 255, 0.3);
+      @property --border-angle { syntax: "<angle>"; inherits: false; initial-value: 0turn; }
+      @keyframes border-spin { to { --border-angle: 1turn; } }
+      .shimmer-border { position: relative; isolation: isolate; overflow: hidden; }
+      .shimmer-border::before {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        padding: 1px;
+        border-radius: inherit;
+        background: conic-gradient(from var(--border-angle), transparent 70%, var(--blue-light) 82%, var(--lilac) 88%, var(--blue-light) 94%, transparent 98%);
+        content: "";
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: border-spin 3s linear infinite;
+        pointer-events: none;
       }
+      .icon { width: 18px; height: 18px; flex: 0 0 auto; }
 
       /* Gradient Text */
       .gradient-text {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(90deg, var(--blue-light), var(--lilac));
         -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
         background-clip: text;
+        color: transparent;
       }
 
+      .page-shell {
+        width: min(100% - 24px, 920px);
+        margin: 0 auto;
+        padding: 0 0 48px;
+      }
+
+      /* Hero */
+      .hero {
+        position: relative;
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        overflow: hidden;
+        padding: 24px max(20px, 4vw) 30px;
+        background: radial-gradient(ellipse 70% 90% at 50% 0, rgba(25, 118, 210, 0.12), transparent 72%);
+        text-align: center;
+      }
+
+      .hero-dots {
+        display: none;
+        position: absolute;
+        inset: -20px 0 -60px;
+        z-index: 0;
+        background-image: radial-gradient(rgba(96, 165, 250, 0.25) 1px, transparent 1px);
+        background-size: 22px 22px;
+        -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 40%, transparent 85%);
+        mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 40%, transparent 85%);
+        pointer-events: none;
+      }
+
+      .hero-glow {
+        display: none;
+        position: absolute;
+        z-index: 0;
+        border-radius: 50%;
+        filter: blur(60px);
+        pointer-events: none;
+      }
+      .hero-glow-blue {
+        top: -40px;
+        left: 50%;
+        width: 320px;
+        height: 320px;
+        background: rgba(25, 118, 210, 0.28);
+        transform: translateX(-50%);
+      }
+      .hero-glow-purple {
+        top: 60px;
+        right: 4%;
+        width: 200px;
+        height: 200px;
+        background: rgba(139, 92, 246, 0.16);
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      .badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        color: var(--blue-light);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse-dot 2s ease-in-out infinite;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+      h1 {
+        position: relative;
+        max-width: 700px;
+        margin: 0 auto 12px;
+        color: white;
+        font-size: clamp(1.7rem, 4.2vw, 2.8rem);
+        line-height: 1.1;
+        letter-spacing: -1.6px;
+        text-wrap: balance;
+      }
+
+      .hero-copy {
+        max-width: 540px;
+        margin: 0 auto 18px;
+        color: rgba(241, 245, 249, 0.72);
+        font-size: 15px;
+      }
+
+      .eyebrow {
+        margin-bottom: 14px;
+        color: var(--blue-light);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+
+      .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+      .hero-actions { display: none; }
+
+      .notice {
+        position: relative;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 16px;
+        align-items: center;
+        margin-top: 4px;
+        padding: 20px 8px;
+      }
+      .notice::before, .notice::after {
+        position: absolute;
+        left: calc(50% - 50vw);
+        width: 100vw;
+        height: 1px;
+        background: rgba(96, 165, 250, 0.18);
+        content: "";
+      }
+      .notice::before { top: 0; }
+      .notice::after { bottom: 0; opacity: 0.7; }
+
+      .notice-icon, .feature-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--blue-light);
+        border: 1px solid rgba(96, 165, 250, 0.2);
+        background: rgba(96, 165, 250, 0.1);
+      }
+
+      .notice-icon { width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(96, 165, 250, 0.1); font-size: 18px; }
+      .notice h2 { margin-bottom: 4px; color: var(--text-high); font-size: 16px; }
+      .notice p { margin-bottom: 0; color: var(--text); font-size: 14px; }
+
+      .steps-section { margin-top: 38px; }
+      .steps-heading { margin-bottom: 16px; color: var(--text-high); font-size: 17px; text-align: center; }
+      .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .step { position: relative; padding: 16px 14px; border-left: 1px solid rgba(96, 165, 250, 0.25); }
+      .step-number { display: block; margin-bottom: 7px; color: var(--blue-light); font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+      .step h3 { margin-bottom: 4px; color: var(--text-high); font-size: 14px; }
+      .step p { margin-bottom: 0; color: var(--text); font-size: 12px; line-height: 1.5; }
+
+      .section { margin-top: 52px; }
+      .section-heading { max-width: 600px; margin: 0 auto 24px; text-align: center; }
+      .section-heading h2 { margin-bottom: 8px; color: white; font-size: 27px; letter-spacing: -0.7px; }
+      .section-heading p { margin-bottom: 0; color: var(--text); }
+
+      .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .feature-icon { width: 40px; height: 40px; margin-bottom: 16px; border-radius: 12px; font-size: 19px; }
+      .feature-card h3 { margin-bottom: 6px; color: var(--text-high); font-size: 15px; }
+      .feature-card p { margin-bottom: 0; color: var(--text); font-size: 13px; line-height: 1.55; }
+
+      /* Divider (reused above quote + footer) */
+      .divider { position: relative; height: 40px; margin: 8px 0; }
+      .divider::before, .divider::after {
+        position: absolute;
+        top: 50%;
+        width: calc(50% - 14px);
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.35));
+        content: "";
+      }
+      .divider::before { left: 0; }
+      .divider::after { right: 0; transform: rotate(180deg); }
+      .divider-mark { position: absolute; top: 50%; left: 50%; width: 16px; height: 18px; fill: var(--text-high); opacity: 0.9; transform: translate(-50%, -50%); }
+
+      /* Quote */
+      .quote { max-width: 640px; margin: 0 auto; text-align: center; }
+      .quote-mark { width: 34px; height: 34px; margin-bottom: 14px; color: rgba(241, 245, 249, 0.18); }
+      .quote p {
+        margin: 0 auto;
+        max-width: 560px;
+        color: var(--text-high);
+        font-size: 21px;
+        font-style: italic;
+        line-height: 1.45;
+        letter-spacing: -0.2px;
+      }
+      .quote-author {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 24px;
+      }
+      .quote-avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 2px solid rgba(96, 165, 250, 0.4);
+        background: linear-gradient(135deg, rgba(25, 118, 210, 0.35), rgba(139, 92, 246, 0.3));
+        overflow: hidden;
+      }
+      .quote-avatar-icon { width: 100%; height: 100%; }
+      .quote-identity { text-align: left; }
+      .quote-name { color: var(--text-high); font-size: 15px; font-weight: 700; }
+      .quote-role { margin-top: 2px; color: var(--blue-light); font-size: 13px; }
+
+      /* CTA */
+      .cta {
+        position: relative;
+        overflow: hidden;
+        padding: 40px 24px;
+        text-align: center;
+        background: linear-gradient(135deg, rgba(25, 118, 210, 0.2), rgba(139, 92, 246, 0.16));
+      }
+
+      .cta::after {
+        position: absolute;
+        right: -70px;
+        bottom: -70px;
+        width: 164px;
+        height: 164px;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at center, var(--text-high) 0 18px, transparent 19px),
+          radial-gradient(circle at center, transparent 0 48px, rgba(241, 245, 249, 0.9) 49px 52px, transparent 53px),
+          radial-gradient(circle at center, transparent 0 68px, rgba(241, 245, 249, 0.9) 69px 72px, transparent 73px);
+        content: "";
+        opacity: 0.28;
+      }
+      .cta::before {
+        position: absolute;
+        top: -80px;
+        left: -60px;
+        width: 200px;
+        height: 200px;
+        background: rgba(96, 165, 250, 0.14);
+        border-radius: 50%;
+        filter: blur(40px);
+        content: "";
+      }
+
+      .cta h2 { position: relative; z-index: 1; margin-bottom: 8px; color: white; font-size: 26px; }
+      .cta p { position: relative; z-index: 1; margin-bottom: 22px; color: var(--text); }
+      .cta .actions { position: relative; z-index: 1; }
+
+      .footer { margin-top: 28px; color: rgba(148, 163, 184, 0.7); font-size: 12px; text-align: center; }
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .footer-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        color: rgba(241, 245, 249, 0.85);
+        font-size: 12px;
+        text-decoration: none;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+      .footer-link:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+      .footer-credit { color: rgba(148, 163, 184, 0.7); }
+      .footer-credit strong { color: rgba(241, 245, 249, 0.85); font-weight: 600; }
+
       /* Responsive */
-      @media (max-width: 768px) {
-        body {
-          padding: 0;
-        }
-        h1 {
-          font-size: 2.5rem !important;
-        }
-        h2 {
-          font-size: 1.75rem !important;
-        }
+      @media (max-width: 700px) {
+        .page-shell { width: min(100% - 16px, 560px); }
+        .topbar { padding: 9px 16px; }
+        .hero { padding: 22px 4px 28px; }
+        .features { grid-template-columns: 1fr; }
+        .steps { grid-template-columns: 1fr; }
+        .quote p { font-size: 19px; }
       }
     </style>
   </head>
-  <body class="px-4 py-12">
-    <div class="mx-auto max-w-4xl">
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="FocusSpace home">
+        <svg class="brand-mark" viewBox="0 0 487.9 562.1" aria-hidden="true" role="img">
+          <path d="m243.63 278.83C165.14 231.51 86.92 184.35 8.02 136.79 86.87 90.83 165.27 45.51 243.68 0c78.43 45.5 156.77 90.94 235.74 136.75-79 47.6-157.32 94.79-235.79 142.07Z" />
+          <path d="M252.02 562.1v-3.93c.01-87.15.03-174.3.04-261.45 0-.37.05-.75 0-1.1-.34-1.99.6-3.13 2.28-4.11 5.71-3.35 11.34-6.85 17.01-10.27 50.53-30.46 101.06-60.9 151.59-91.36 19.96-12.03 39.91-24.08 59.87-36.1 1.43-.86 2.94-1.61 4.79-2.61.12 1.38.28 2.3.28 3.23 0 87.03-.02 174.05.03 261.08 0 2.7-.6 4.4-3.12 5.92-76.33 46.09-152.61 92.28-228.89 138.46-1.04.63-2.1 1.22-3.87 2.25Z" />
+          <path d="M235.22 562.1C156.49 514.44 78.27 467.09 0 419.7V151.94c.08-.04.18-.11.29-.14.11-.04.26-.11.34-.07.66.32 1.34.62 1.96.99 77.52 46.71 155.04 93.42 232.63 140.18v269.2Z" />
+        </svg>
+        FocusSpace
+      </a>
+      <a class="btn btn-primary btn-small" href="https://chromewebstore.google.com/search/FocusSpace" target="_blank" rel="noopener noreferrer">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29zm13.342 2.166a5.446 5.446 0 0 1 1.45 7.09l.002.001h-.002l-5.344 9.257c.206.01.413.016.621.016 6.627 0 12-5.373 12-12 0-1.54-.29-3.011-.818-4.364z" />
+        </svg>
+        Install
+      </a>
+    </header>
+
+    <main class="page-shell" id="top">
       <!-- Hero Section -->
-      <div class="mb-16 text-center slide-in-down">
-        <div
-          class="mb-8 inline-block rounded-full bg-white/20 p-6 backdrop-blur-md hero-icon">
-          <span class="text-7xl">🎯</span>
+      <section class="hero fade-in-up">
+        <div class="hero-dots" aria-hidden="true"></div>
+        <div class="hero-glow hero-glow-blue" aria-hidden="true"></div>
+        <div class="hero-glow hero-glow-purple" aria-hidden="true"></div>
+
+        <div class="hero-content">
+          <div class="badge-pill">
+            <span class="badge-dot" aria-hidden="true"></span>
+            Welcome to FocusSpace
+          </div>
+
+          <h1>Your workspace for <span class="gradient-text">deep focus.</span></h1>
+          <p class="hero-copy">Your extension is ready. Clean the noise, choose your mode, and get to work.</p>
+
+          <div class="actions hero-actions">
+            <a class="btn btn-primary" href="https://chromewebstore.google.com/search/FocusSpace" target="_blank" rel="noopener noreferrer">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29zm13.342 2.166a5.446 5.446 0 0 1 1.45 7.09l.002.001h-.002l-5.344 9.257c.206.01.413.016.621.016 6.627 0 12-5.373 12-12 0-1.54-.29-3.011-.818-4.364z" />
+              </svg>
+              Install Free Now
+              <span aria-hidden="true">→</span>
+            </a>
+            <a class="btn btn-secondary shimmer-border" href="https://github.com/joseorono/focus-space" target="_blank" rel="noopener noreferrer">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+              View on GitHub
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </div>
-        <h1 class="mb-4 text-6xl font-bold text-white fade-in-up">
-          Welcome to FocusSpace
-        </h1>
-        <p class="mb-8 text-xl text-white/95 fade-in-up">
-          Your environment for deep work is ready. Clean distractions. Reclaim focus.
-        </p>
-        <div class="flex flex-wrap items-center justify-center gap-4">
-          <a
-            href="https://github.com/joseorono/"
-            class="btn btn-secondary"
-            target="_blank">
-            🔗 GitHub
-          </a>
-          <a
-            href="https://www.linkedin.com/in/joseorono/"
-            class="btn btn-secondary"
-            target="_blank">
-            💼 LinkedIn
-          </a>
-        </div>
-      </div>
+      </section>
 
       <!-- Disclaimer Card -->
-      <div class="card mb-12 bg-white p-8 fade-in-up">
-        <div class="flex items-start gap-4">
-          <div class="flex-shrink-0">
-            <div
-              class="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-200">
-              <span class="text-2xl">ℹ️</span>
-            </div>
-          </div>
-          <div class="flex-1">
-            <h3 class="mb-3 text-xl font-bold text-gray-900">Important Note</h3>
-            <p class="text-gray-700 leading-relaxed">
-              FocusSpace is designed to help you curate a distraction-free digital environment.
-              Please use it responsibly. We are not liable for any data loss resulting from the cleaning features.
-            </p>
-          </div>
+      <aside class="notice fade-in-up delay-1">
+        <div class="notice-icon" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>
         </div>
-      </div>
+        <div>
+          <h2>Built for a calmer browser</h2>
+          <p>FocusSpace helps you curate a distraction-free digital environment. Cleaning actions can remove browser data, so choose what you clear with care.</p>
+        </div>
+      </aside>
 
-      <!-- Tagline -->
-      <div
-        class="card mb-12 bg-gradient-to-r from-purple-600 to-indigo-600 p-10 text-center fade-in-up">
-        <h2 class="text-4xl font-bold text-white">
-          Clear the noise. Find your flow.
-        </h2>
-      </div>
+      <!-- How It Works -->
+      <section class="steps-section" id="how-it-works" aria-labelledby="steps-title">
+        <h2 class="steps-heading" id="steps-title">Three steps to a focused browser</h2>
+        <div class="steps">
+          <article class="step">
+            <span class="step-number">01</span>
+            <h3>Choose your mode</h3>
+            <p>Pick Focus, Session Cleaner, or Browser Cleaner from the extension.</p>
+          </article>
+          <article class="step">
+            <span class="step-number">02</span>
+            <h3>Clear the noise</h3>
+            <p>Remove distracting tabs and history with the controls you choose.</p>
+          </article>
+          <article class="step">
+            <span class="step-number">03</span>
+            <h3>Start your session</h3>
+            <p>Set your timer and give your most important work your full attention.</p>
+          </article>
+        </div>
+      </section>
 
       <!-- Features Section -->
-      <div class="card bg-white p-8 fade-in-up">
-        <h2 class="mb-12 text-center text-4xl font-bold text-gray-900">
-          Powerful Features
-        </h2>
-
-        <div class="grid gap-6 md:grid-cols-2">
-          <!-- Feature 1 -->
-          <div
-            class="feature-card bg-gradient-to-br from-blue-50 to-blue-100">
-            <div class="mb-4 flex items-center gap-3">
-              <span class="text-4xl">⚡</span>
-              <h3 class="text-lg font-bold text-gray-900">Session Cleaner</h3>
-            </div>
-            <p class="text-gray-700 leading-relaxed">
-              Instantly clear the clutter. The Session Cleaner intelligently closes distracting tabs based on your custom filters, allowing you to reclaim your attention.
-            </p>
-          </div>
-
-          <!-- Feature 2 -->
-          <div
-            class="feature-card bg-gradient-to-br from-purple-50 to-purple-100">
-            <div class="mb-4 flex items-center gap-3">
-              <span class="text-4xl">✨</span>
-              <h3 class="text-lg font-bold text-gray-900">Digital Declutter</h3>
-            </div>
-            <p class="text-gray-700 leading-relaxed">
-              Remove non-essential history entries. FocusSpace acts as a filter for your digital footprint, keeping your history professional and relevant.
-            </p>
-          </div>
-
-          <!-- Feature 3 -->
-          <div
-            class="feature-card bg-gradient-to-br from-green-50 to-green-100">
-            <div class="mb-4 flex items-center gap-3">
-              <span class="text-4xl">⚙️</span>
-              <h3 class="text-lg font-bold text-gray-900">
-                Smart Customization
-              </h3>
-            </div>
-            <p class="text-gray-700 leading-relaxed">
-              Tailor the experience to your workflow. Define what constitutes a distraction with granular category controls and custom keywords.
-            </p>
-          </div>
-
-          <!-- Feature 4 -->
-          <div
-            class="feature-card bg-gradient-to-br from-pink-50 to-pink-100">
-            <div class="mb-4 flex items-center gap-3">
-              <span class="text-4xl">🛡️</span>
-              <h3 class="text-lg font-bold text-gray-900">Privacy First</h3>
-            </div>
-            <p class="text-gray-700 leading-relaxed">
-              Your data stays on your device. FocusSpace respects your privacy while helping you maintain a clean digital slate.
-            </p>
-          </div>
-
-          <!-- Feature 5 -->
-          <div
-            class="feature-card bg-gradient-to-br from-yellow-50 to-yellow-100">
-            <div class="mb-4 flex items-center gap-3">
-              <span class="text-4xl">🚀</span>
-              <h3 class="text-lg font-bold text-gray-900">
-                Seamless Performance
-              </h3>
-            </div>
-            <p class="text-gray-700 leading-relaxed">
-              Efficient by design. Perform clean-up actions in seconds without interrupting your browser's performance.
-            </p>
-          </div>
-
-          <!-- Feature 6 -->
-          <div
-            class="feature-card bg-gradient-to-br from-indigo-50 to-indigo-100">
-            <div class="mb-4 flex items-center gap-3">
-              <span class="text-4xl">✅</span>
-              <h3 class="text-lg font-bold text-gray-900">Whitelist Support</h3>
-            </div>
-            <p class="text-gray-700 leading-relaxed">
-              Protect what matters. Ensure vital work tools and documentation remain open while clearing away the noise.
-            </p>
-          </div>
+      <section class="section fade-in-up delay-2" aria-labelledby="features-title">
+        <div class="section-heading">
+          <p class="eyebrow">Everything you need to stay in flow</p>
+          <h2 id="features-title">A lightweight toolkit for deep work</h2>
+          <p>Simple controls, thoughtful defaults, and all your data kept right where it belongs: on your device.</p>
         </div>
-
-        <!-- Footer Text -->
-        <div
-          class="mt-10 rounded-xl bg-gradient-to-r from-purple-100 to-indigo-100 p-8 text-center">
-          <p class="text-lg font-semibold text-gray-800">
-            Ready to focus on what matters?
-          </p>
-          <p class="mt-2 text-gray-700">
-            Start using FocusSpace today and transform your digital environment.
-          </p>
+        <div class="features">
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6Z"/><path d="M8 11V7a4 4 0 1 1 8 0v4"/></svg>
+            </div>
+            <h3>Session Cleaner</h3>
+            <p>Close distracting tabs based on your custom filters and start with a clean workspace.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            </div>
+            <h3>Focus Sessions</h3>
+            <p>Use a Pomodoro-style timer to create a clear boundary around your most important work.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h17"/><path d="m7 16 3-4 3 2 5-7"/></svg>
+            </div>
+            <h3>Digital Declutter</h3>
+            <p>Remove distracting history while keeping your useful tools and work resources close.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/><path d="M9 4v4"/><path d="M15 10v4"/><path d="M10 16v4"/></svg>
+            </div>
+            <h3>Custom Work Modes</h3>
+            <p>Shape categories, keywords, and allowlists around the way you actually work.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <h3>Private by Design</h3>
+            <p>FocusSpace is local-first, with no account required and no productivity data sold.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1.36 0 2.51.9 2.88 2.14l.05.21a8 8 0 0 1 4.02 6.07l.03.29.02 3.07a3 3 0 0 0 1.32 2.1c.86.49.56 1.77-.38 1.86H4.07c-1.03 0-1.39-1.36-.49-1.87a3 3 0 0 0 1.47-2.06l.02-.14V10.7A8 8 0 0 1 8.9 4.25l.25-.15.01-.04A3 3 0 0 1 12 2Z"/><path d="M9 20a4 4 0 0 0 6 0" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            </div>
+            <h3>Lightweight</h3>
+            <p>Get from distraction to deep work in a few seconds without leaving your browser.</p>
+          </article>
         </div>
+      </section>
+
+      <div class="divider" aria-hidden="true">
+        <svg class="divider-mark" viewBox="0 0 487.9 562.1">
+          <path d="m243.63 278.83C165.14 231.51 86.92 184.35 8.02 136.79 86.87 90.83 165.27 45.51 243.68 0c78.43 45.5 156.77 90.94 235.74 136.75-79 47.6-157.32 94.79-235.79 142.07Z" />
+          <path d="M252.02 562.1v-3.93c.01-87.15.03-174.3.04-261.45 0-.37.05-.75 0-1.1-.34-1.99.6-3.13 2.28-4.11 5.71-3.35 11.34-6.85 17.01-10.27 50.53-30.46 101.06-60.9 151.59-91.36 19.96-12.03 39.91-24.08 59.87-36.1 1.43-.86 2.94-1.61 4.79-2.61.12 1.38.28 2.3.28 3.23 0 87.03-.02 174.05.03 261.08 0 2.7-.6 4.4-3.12 5.92-76.33 46.09-152.61 92.28-228.89 138.46-1.04.63-2.1 1.22-3.87 2.25Z" />
+          <path d="M235.22 562.1C156.49 514.44 78.27 467.09 0 419.7V151.94c.08-.04.18-.11.29-.14.11-.04.26-.11.34-.07.66.32 1.34.62 1.96.99 77.52 46.71 155.04 93.42 232.63 140.18v269.2Z" />
+        </svg>
       </div>
 
-      <!-- Bottom Spacing -->
-      <div class="mt-16 text-center fade-in-up">
-        <p class="text-white/90 text-sm font-light">Made with ❤️ by Jose Orono</p>
-      </div>
-    </div>
+      <!-- Quote Section -->
+      <section class="section quote fade-in-up delay-3" aria-labelledby="quote-title">
+        <svg class="quote-mark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+          <path d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8c0-1.1.9-2 2-2V8zm14 0c-3.3 0-6 2.7-6 6v10h10V14h-6c0-1.1.9-2 2-2V8z" />
+        </svg>
+        <p id="quote-title">&ldquo;I built this because I needed it. I&rsquo;m shipping it because maybe you do too.&rdquo;</p>
+        <div class="quote-author">
+          <div class="quote-avatar" aria-hidden="true">
+            <svg class="quote-avatar-icon" viewBox="0 0 480 465.14" role="img">
+              <path fill="#f1f5f9" d="m285.96 0h-91.91C86.88 0 0 83.01 0 185.4v94.33c0 102.4 86.88 185.4 194.04 185.4h91.91c107.17 0 194.04-83.01 194.04-185.4V185.4C480 83.01 393.12 0 285.96 0ZM91.46 211.75c-15.23-3.73-23.28-18.09-25.61-22.65 4.31-3.38 16.66-12.09 31.75-9.5 16.25 2.79 25.35 16.92 28.08 21.58-3.5 3.09-17.46 14.68-34.22 10.57Zm60.68 173.36s4.16-42.75 3.81-57.12c-.34-14.37 10.73-24.06 10.73-24.06l29.17-26.74s-24.32-26.4-38.94-41.72c-14.62-15.32-10.04-45.01-10.04-45.01 1.61-33.86 3.23-67.73 4.84-101.59 86.26 54.51 172.52 109.02 258.77 163.52-86.12 44.24-172.24 88.47-258.35 132.71Z" />
+            </svg>
+          </div>
+          <div class="quote-identity">
+            <div class="quote-name">Jose Orono</div>
+            <div class="quote-role">Maker &amp; Maintainer, FocusSpace</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tagline / CTA -->
+      <section class="section card cta fade-in-up delay-4" aria-labelledby="cta-title">
+        <h2 id="cta-title">Clear the noise. <span class="gradient-text">Find your flow.</span></h2>
+        <p>Open the extension, choose your focus mode, and make room for meaningful work.</p>
+        <div class="actions">
+          <a class="btn btn-secondary shimmer-border" href="https://github.com/joseorono/focus-space" target="_blank" rel="noopener noreferrer">Start focusing <span aria-hidden="true">&nbsp;→</span></a>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="divider" aria-hidden="true">
+          <svg class="divider-mark" viewBox="0 0 487.9 562.1">
+            <path d="m243.63 278.83C165.14 231.51 86.92 184.35 8.02 136.79 86.87 90.83 165.27 45.51 243.68 0c78.43 45.5 156.77 90.94 235.74 136.75-79 47.6-157.32 94.79-235.79 142.07Z" />
+            <path d="M252.02 562.1v-3.93c.01-87.15.03-174.3.04-261.45 0-.37.05-.75 0-1.1-.34-1.99.6-3.13 2.28-4.11 5.71-3.35 11.34-6.85 17.01-10.27 50.53-30.46 101.06-60.9 151.59-91.36 19.96-12.03 39.91-24.08 59.87-36.1 1.43-.86 2.94-1.61 4.79-2.61.12 1.38.28 2.3.28 3.23 0 87.03-.02 174.05.03 261.08 0 2.7-.6 4.4-3.12 5.92-76.33 46.09-152.61 92.28-228.89 138.46-1.04.63-2.1 1.22-3.87 2.25Z" />
+            <path d="M235.22 562.1C156.49 514.44 78.27 467.09 0 419.7V151.94c.08-.04.18-.11.29-.14.11-.04.26-.11.34-.07.66.32 1.34.62 1.96.99 77.52 46.71 155.04 93.42 232.63 140.18v269.2Z" />
+          </svg>
+        </div>
+        <div class="footer-links">
+          <a class="footer-link" href="https://github.com/joseorono/focus-space" target="_blank" rel="noopener noreferrer">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width: 14px; height: 14px;">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+            </svg>
+            GitHub
+          </a>
+          <a class="footer-link" href="https://github.com/joseorono/focus-space/issues" target="_blank" rel="noopener noreferrer">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>
+            Report an Issue
+          </a>
+          <a class="footer-link" href="https://chromewebstore.google.com/search/FocusSpace" target="_blank" rel="noopener noreferrer">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width: 14px; height: 14px;">
+              <path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29zm13.342 2.166a5.446 5.446 0 0 1 1.45 7.09l.002.001h-.002l-5.344 9.257c.206.01.413.016.621.016 6.627 0 12-5.373 12-12 0-1.54-.29-3.011-.818-4.364z" />
+            </svg>
+            Install for Chrome
+          </a>
+        </div>
+        <p class="footer-credit">Made for focused work &middot; <strong>FocusSpace</strong> &middot; GPLv3 Licensed</p>
+      </footer>
+    </main>
   </body>
 </html>

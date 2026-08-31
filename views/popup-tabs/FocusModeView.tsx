@@ -142,6 +142,19 @@ export default function FocusModeView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run only once on mount
 
+  // Local tick for smooth 1-second UI updates while popup is open.
+  // The background timer persists state to storage every 5 seconds,
+  // so without this local tick the UI would only update every 5 seconds.
+  useEffect(() => {
+    if (focus.timerStatus !== "running") return;
+
+    const interval = setInterval(() => {
+      dispatch(tick());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [focus.timerStatus, dispatch]);
+
   const handleStart = () => {
     // Prevent starting if already running
     if (focus.timerStatus === "running") {

@@ -1,3 +1,5 @@
+/// <reference types="chrome" />
+
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -10,7 +12,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function openOnboardingTab() {
-  chrome.tabs.create({ url: "/static/onboarding.html" });
+  const onboardingUrl: string = `${chrome.runtime.getURL("static/onboarding.html")}?v=${Date.now()}`;
+  chrome.tabs.create({ url: onboardingUrl });
 }
 
 export function formatCategoryLabel(category: BadKeywordCategory): string {

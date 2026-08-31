@@ -5,6 +5,8 @@
   "description": "A productivity workspace cleaner that removes distractions from your history and tabs, preparing you for deep work.",
   "author": " Jose Orono <joseomaker@gmail.com>",
   "scripts": {
+    "predev": "node scripts/sync-onboarding.js",
+    "sync-onboarding": "node scripts/sync-onboarding.js",
     "dev": "plasmo dev",
     "dev-verbose": "plasmo dev --verbose",
     "build": "plasmo build",

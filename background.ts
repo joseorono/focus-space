@@ -1,6 +1,11 @@
+/// <reference types="chrome" />
+
 import { Storage } from "@plasmohq/storage";
 
-import { MAX_PAST_TASKS_ARCHIVED } from "~constants";
+import {
+  BACKGROUND_TIMER_PERSIST_INTERVAL_MS,
+  MAX_PAST_TASKS_ARCHIVED
+} from "~constants";
 import type { FocusState } from "~store/features/focus/focusSlice";
 
 export {};
@@ -13,17 +18,30 @@ interface ReduxState {
 console.log("Background Worker Active. You can now use the extension");
 
 const storage = new Storage();
-let timerInterval: NodeJS.Timeout | null = null;
+let timerInterval: ReturnType<typeof setInterval> | null = null;
 
 // Background timer that persists when popup is closed
 async function startBackgroundTimer() {
   // Note: Caller should clear any existing interval before calling this
+  let persistTickCount = 0;
+  const persistIntervalTicks = Math.max(
+    1,
+    Math.floor(BACKGROUND_TIMER_PERSIST_INTERVAL_MS / 1000)
+  );
+
+  // Load state once at start and keep in memory for accurate per-second ticking
+  let inMemoryState: ReduxState | null = (await storage.get(
+    "reduxState"
+  )) as ReduxState | null;
+
   timerInterval = setInterval(async () => {
     try {
-      const state = (await storage.get("reduxState")) as ReduxState | null;
-      if (!state || !state.focus) return;
+      if (!inMemoryState || !inMemoryState.focus) {
+        inMemoryState = (await storage.get("reduxState")) as ReduxState | null;
+        if (!inMemoryState || !inMemoryState.focus) return;
+      }
 
-      const focus = state.focus;
+      const focus = inMemoryState.focus;
 
       // Only tick if timer is running and time remaining
       if (focus.timerStatus === "running" && focus.timeRemaining > 0) {
@@ -33,11 +51,16 @@ async function startBackgroundTimer() {
 
         // Check if session completed (reached zero)
         if (newTimeRemaining === 0) {
-          await handleSessionComplete(state);
+          await handleSessionComplete(inMemoryState);
+          // Reload state after session completion
+          inMemoryState = (await storage.get("reduxState")) as ReduxState | null;
         } else {
-          // Optimized: Save updated state with new time
-          // This persists the countdown across popup close/reopen
-          await storage.set("reduxState", state);
+          persistTickCount += 1;
+          // Persist timer state periodically instead of every second
+          // to avoid Chrome Storage Sync write quota errors
+          if (persistTickCount % persistIntervalTicks === 0) {
+            await storage.set("reduxState", inMemoryState);
+          }
         }
       }
       // Note: Don't auto-stop the interval here, let the storage watcher handle it
@@ -57,21 +80,21 @@ async function handleSessionComplete(state: ReduxState) {
     const currentTask = focus.tasks[focus.currentTaskIndex];
     if (currentTask && !currentTask.completed) {
       currentTask.pomsTaken += 1;
-      
+
       // Mark task as completed if it reached the expected pomodoros
       if (currentTask.pomsTaken >= currentTask.pomsExpected) {
         currentTask.completed = true;
         currentTask.completedAt = Date.now();
-        
+
         // Move to past tasks
         focus.pastTasks.unshift(currentTask);
         focus.tasks.splice(focus.currentTaskIndex, 1);
-        
+
         // Adjust current task index
         if (focus.currentTaskIndex >= focus.tasks.length) {
           focus.currentTaskIndex = Math.max(0, focus.tasks.length - 1);
         }
-        
+
         // Limit past tasks to prevent unlimited growth
         if (focus.pastTasks.length > MAX_PAST_TASKS_ARCHIVED) {
           focus.pastTasks.pop();
@@ -91,10 +114,13 @@ async function handleSessionComplete(state: ReduxState) {
     // Completing a break (short or long)
     focus.timerMode = "work";
     focus.timeRemaining = focus.settings.workDuration;
-    
+
     // Reset sessions counter after completing a long break
     // This ensures the counter cycles: 1/4, 2/4, 3/4, 4/4, then back to 0/4
-    if (focus.timerMode === "work" && focus.sessionsCompleted >= focus.settings.sessionsUntilLongBreak) {
+    if (
+      focus.timerMode === "work" &&
+      focus.sessionsCompleted >= focus.settings.sessionsUntilLongBreak
+    ) {
       focus.sessionsCompleted = 0;
     }
   }
@@ -151,8 +177,11 @@ storage.watch({
   }
 })();
 
-chrome.runtime.onInstalled.addListener(({ reason }) => {
-  if (reason === "install") {
-    chrome.tabs.create({ url: "static/onboarding.html" });
+chrome.runtime.onInstalled.addListener(
+  ({ reason }: chrome.runtime.InstalledDetails): void => {
+    if (reason === "install") {
+      const onboardingUrl: string = `${chrome.runtime.getURL("static/onboarding.html")}?v=${Date.now()}`;
+      chrome.tabs.create({ url: onboardingUrl });
+    }
   }
-});
+);

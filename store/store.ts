@@ -1,15 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-
-
 import { Storage } from "@plasmohq/storage";
 
+import { REDUX_STORAGE_DEBOUNCE_MS } from "~constants";
 
-
-import counterReducer, { initializeFromStorage as initializeCounter } from "./features/counter/counterSlice";
-import focusReducer, { initializeFromStorage as initializeFocus } from "./features/focus/focusSlice";
-import settingsReducer, { initializeFromStorage as initializeSettings } from "./features/settings/settingsSlice";
-
+import counterReducer, {
+  initializeFromStorage as initializeCounter
+} from "./features/counter/counterSlice";
+import focusReducer, {
+  initializeFromStorage as initializeFocus,
+  switchMode
+} from "./features/focus/focusSlice";
+import settingsReducer, {
+  initializeFromStorage as initializeSettings
+} from "./features/settings/settingsSlice";
 
 // Configure store
 export const store = configureStore({
@@ -23,10 +27,21 @@ export const store = configureStore({
 // Set up storage to sync state between browser contexts
 const storage = new Storage();
 
-// Subscribe to Redux store changes and save to storage
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+// Subscribe to Redux store changes and save to storage.
+// Writes are debounced to avoid exceeding Chrome Storage Sync's
+// MAX_WRITE_OPERATIONS_PER_MINUTE quota during rapid state changes.
 store.subscribe(() => {
-  const state = store.getState();
-  storage.set("reduxState", state);
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+  }
+
+  debounceTimer = setTimeout(() => {
+    const state = store.getState();
+    storage.set("reduxState", state);
+    debounceTimer = null;
+  }, REDUX_STORAGE_DEBOUNCE_MS);
 });
 
 // Load state from storage on startup
@@ -35,9 +50,15 @@ async function loadStateFromStorage() {
     const savedState = await storage.get("reduxState");
     if (savedState) {
       // Dispatch actions to initialize each slice with saved state
-      store.dispatch(initializeCounter(savedState));
-      store.dispatch(initializeSettings(savedState));
-      store.dispatch(initializeFocus(savedState));
+      const reduxState = savedState as unknown as Record<string, unknown>;
+      store.dispatch(initializeCounter(reduxState));
+      store.dispatch(initializeSettings(reduxState));
+      store.dispatch(initializeFocus(reduxState));
+
+      const focusState = store.getState().focus;
+      if (focusState.timerStatus !== "running") {
+        store.dispatch(switchMode("work"));
+      }
     }
   } catch (error) {
     console.error("Failed to load state from storage:", error);
