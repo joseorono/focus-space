@@ -10,12 +10,18 @@ import {
 } from "~constants";
 import type { TimerMode, TimerStatus, ToDoTask } from "~types/focus";
 
+import { applySessionCompletion } from "./session-completion";
+
 export interface FocusState {
   timerMode: TimerMode;
   timerStatus: TimerStatus;
   timeRemaining: number;
   sessionsCompleted: number;
   currentSessionStartTime: number | null;
+  // Epoch ms when the running session completes. This timestamp (not a
+  // per-second counter) is the source of truth while the timer runs, so the
+  // countdown survives service worker suspension and popup closes.
+  sessionEndTime: number | null;
   currentTaskIndex: number;
   tasks: ToDoTask[];
   pastTasks: ToDoTask[];
@@ -33,6 +39,7 @@ const initialState: FocusState = {
   timeRemaining: 25 * 60,
   sessionsCompleted: 0,
   currentSessionStartTime: null,
+  sessionEndTime: null,
   currentTaskIndex: 0,
   tasks: [],
   pastTasks: [],
@@ -79,6 +86,9 @@ export const focusSlice = createSlice({
         if (savedFocus.currentSessionStartTime !== undefined) {
           state.currentSessionStartTime = savedFocus.currentSessionStartTime;
         }
+        if (savedFocus.sessionEndTime !== undefined) {
+          state.sessionEndTime = savedFocus.sessionEndTime;
+        }
         if (savedFocus.currentTaskIndex !== undefined) {
           state.currentTaskIndex = savedFocus.currentTaskIndex;
         }
@@ -87,18 +97,28 @@ export const focusSlice = createSlice({
 
     startTimer: (state) => {
       state.timerStatus = "running";
+      state.sessionEndTime = Date.now() + state.timeRemaining * 1000;
       if (state.currentSessionStartTime === null) {
         state.currentSessionStartTime = Date.now();
       }
     },
 
     pauseTimer: (state) => {
+      // Freeze the remaining time derived from the end timestamp
+      if (state.sessionEndTime !== null) {
+        state.timeRemaining = Math.max(
+          0,
+          Math.round((state.sessionEndTime - Date.now()) / 1000)
+        );
+      }
+      state.sessionEndTime = null;
       state.timerStatus = "paused";
     },
 
     resetTimer: (state) => {
       state.timerStatus = "idle";
       state.currentSessionStartTime = null;
+      state.sessionEndTime = null;
       const duration =
         state.settings[
           `${state.timerMode}Duration` as keyof typeof state.settings
@@ -107,42 +127,26 @@ export const focusSlice = createSlice({
     },
 
     tick: (state) => {
-      if (state.timerStatus === "running" && state.timeRemaining > 0) {
-        state.timeRemaining -= 1;
+      // Derive the remaining time from the end timestamp instead of
+      // decrementing, so the displayed value can never drift from wall-clock
+      // time no matter how many contexts tick or how long they were asleep.
+      if (state.timerStatus === "running" && state.sessionEndTime !== null) {
+        state.timeRemaining = Math.max(
+          0,
+          Math.ceil((state.sessionEndTime - Date.now()) / 1000)
+        );
       }
     },
 
     completeSession: (state) => {
-      if (state.timerMode === "work") {
-        state.sessionsCompleted += 1;
-        const shouldTakeLongBreak =
-          state.sessionsCompleted % state.settings.sessionsUntilLongBreak === 0;
-        state.timerMode = shouldTakeLongBreak ? "longBreak" : "shortBreak";
-        state.timeRemaining = shouldTakeLongBreak
-          ? state.settings.longBreakDuration
-          : state.settings.shortBreakDuration;
-      } else {
-        // Completing a break (short or long)
-        state.timerMode = "work";
-        state.timeRemaining = state.settings.workDuration;
-
-        // Reset sessions counter after completing a long break
-        // This ensures the counter cycles: 1/4, 2/4, 3/4, 4/4, then back to 0/4
-        if (
-          state.timerMode === "work" &&
-          state.sessionsCompleted >= state.settings.sessionsUntilLongBreak
-        ) {
-          state.sessionsCompleted = 0;
-        }
-      }
-      state.timerStatus = "idle";
-      state.currentSessionStartTime = null;
+      applySessionCompletion(state);
     },
 
     switchMode: (state, action: PayloadAction<TimerMode>) => {
       state.timerMode = action.payload;
       state.timerStatus = "idle";
       state.currentSessionStartTime = null;
+      state.sessionEndTime = null;
       const duration =
         state.settings[
           `${action.payload}Duration` as keyof typeof state.settings

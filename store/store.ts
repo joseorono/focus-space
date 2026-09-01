@@ -24,8 +24,10 @@ export const store = configureStore({
   }
 });
 
-// Set up storage to sync state between browser contexts
-const storage = new Storage();
+// Set up storage to sync state between browser contexts.
+// The "local" area avoids chrome.storage.sync's 8KB per-item cap and
+// write-rate quotas (the whole redux state lives under one key).
+const storage = new Storage({ area: "local" });
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -56,7 +58,10 @@ async function loadStateFromStorage() {
       store.dispatch(initializeFocus(reduxState));
 
       const focusState = store.getState().focus;
-      if (focusState.timerStatus !== "running") {
+      // Only reset to work mode when the timer is idle. A running session
+      // keeps counting down from sessionEndTime, and a paused session must
+      // keep its remaining time instead of being wiped to a full duration.
+      if (focusState.timerStatus === "idle") {
         store.dispatch(switchMode("work"));
       }
     }

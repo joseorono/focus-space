@@ -24,7 +24,10 @@ export const DEFAULT_SESSIONS_UNTIL_LONG_BREAK = 4;
 
 // Storage throttling constants
 export const REDUX_STORAGE_DEBOUNCE_MS = 1000;
-export const BACKGROUND_TIMER_PERSIST_INTERVAL_MS = 5000;
+
+// Name of the chrome.alarms alarm that wakes the background worker to
+// complete a pomodoro session (fires at focus.sessionEndTime)
+export const FOCUS_ALARM_NAME = "focus-session-complete";
 
 // https://www.cisdem.com/resource/list-of-websites-to-block-at-work.html
 export const nsfwKeywords: string[] = [
