@@ -10,6 +10,7 @@
     "dev": "plasmo dev",
     "dev-verbose": "plasmo dev --verbose",
     "build": "plasmo build",
+    "package": "node -e \"require('fs').rmSync('build/chrome-mv3-prod',{recursive:true,force:true})\" && plasmo build && plasmo package",
     "test": "plasmo test",
     "dev-expose-host": "vite --host",
     "dev-expose-port": "vite --port",
