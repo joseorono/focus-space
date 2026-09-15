@@ -51,6 +51,19 @@ const initialState: FocusState = {
   }
 };
 
+// Derive the remaining time from the end timestamp instead of decrementing,
+// so the displayed value can never drift from wall-clock time no matter how
+// many contexts tick, how long they were asleep, or how stale the persisted
+// timeRemaining is when the popup re-hydrates from storage.
+const syncTimeRemainingFromEndTime = (state: FocusState): void => {
+  if (state.timerStatus === "running" && state.sessionEndTime !== null) {
+    state.timeRemaining = Math.max(
+      0,
+      Math.ceil((state.sessionEndTime - Date.now()) / 1000)
+    );
+  }
+};
+
 export const focusSlice = createSlice({
   name: "focus",
   initialState,
@@ -92,6 +105,10 @@ export const focusSlice = createSlice({
         if (savedFocus.currentTaskIndex !== undefined) {
           state.currentTaskIndex = savedFocus.currentTaskIndex;
         }
+        // The persisted timeRemaining is whatever was last debounce-written
+        // before the popup closed; recompute it so the first hydrated render
+        // is already correct instead of waiting for the next tick.
+        syncTimeRemainingFromEndTime(state);
       }
     },
 
@@ -127,15 +144,7 @@ export const focusSlice = createSlice({
     },
 
     tick: (state) => {
-      // Derive the remaining time from the end timestamp instead of
-      // decrementing, so the displayed value can never drift from wall-clock
-      // time no matter how many contexts tick or how long they were asleep.
-      if (state.timerStatus === "running" && state.sessionEndTime !== null) {
-        state.timeRemaining = Math.max(
-          0,
-          Math.ceil((state.sessionEndTime - Date.now()) / 1000)
-        );
-      }
+      syncTimeRemainingFromEndTime(state);
     },
 
     completeSession: (state) => {

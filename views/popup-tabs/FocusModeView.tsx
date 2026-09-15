@@ -145,15 +145,29 @@ export default function FocusModeView() {
 
   // Local tick for smooth 1-second UI updates while popup is open.
   // tick derives timeRemaining from focus.sessionEndTime (wall-clock), so
-  // this can never drift from the background's completion alarm.
+  // this can never drift from the background's completion alarm. It runs once
+  // immediately so the display is correct the instant the session is hydrated
+  // (or becomes visible again) instead of a full second later.
   useEffect(() => {
     if (focus.timerStatus !== "running") return;
+
+    dispatch(tick());
 
     const interval = setInterval(() => {
       dispatch(tick());
     }, 1000);
 
-    return () => clearInterval(interval);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        dispatch(tick());
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [focus.timerStatus, dispatch]);
 
   const handleStart = () => {

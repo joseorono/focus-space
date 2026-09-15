@@ -70,8 +70,11 @@ async function loadStateFromStorage() {
   }
 }
 
-// Load state when the extension starts
-loadStateFromStorage();
+// Load state when the extension starts. Consumers (popup.tsx) await this so
+// they never paint the pre-hydration default state (e.g. an idle 25:00 timer
+// while a session is actually running). loadStateFromStorage catches its own
+// errors, so this promise always resolves.
+export const storeReady: Promise<void> = loadStateFromStorage();
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
