@@ -19,6 +19,7 @@ interface UseTabsPersistedReturn {
 export default function useTabsPersisted(): UseTabsPersistedReturn {
   const [tabs, setTabs] = useState<chrome.tabs.Tab[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasFetched, setHasFetched] = useState<boolean>(false);
 
   // Persist filtered tabs to Plasmo Storage
   const [persistedTabs, setPersistedTabs] = useStorage<chrome.tabs.Tab[]>(
@@ -39,6 +40,7 @@ export default function useTabsPersisted(): UseTabsPersistedReturn {
     const allTabs = await getAllTabs();
     if (allTabs) {
       setTabs(allTabs);
+      setHasFetched(true);
     }
     setIsLoading(false);
   };
@@ -62,29 +64,22 @@ export default function useTabsPersisted(): UseTabsPersistedReturn {
 
   // Get keywords from settings using utility function
   const keywords = useGetKeywordsFromSettings(settings);
+  // Stable dependency key: keywords is a fresh array on every render
+  const keywordsKey = keywords.join("|");
 
-  const handleFilterTabsWithKeywords = () => {
+  // Re-filter and persist whenever a fresh tab list or the settings change.
+  // Only persist after a real fetch so the stored list is never overwritten
+  // by the initial empty state, but IS cleared once the tabs are gone.
+  useEffect(() => {
+    if (!hasFetched) {
+      return;
+    }
     const tabsWithKeywords = tabs.filter((tab) => {
       const url = tab.url?.toLowerCase();
       return keywords.some((keyword) => url?.includes(keyword));
     });
-    return tabsWithKeywords;
-  };
-
-  const tabsWithKeywords = handleFilterTabsWithKeywords();
-
-  // Update persisted tabs whenever tabs or settings change
-  useEffect(() => {
-    if (tabs.length > 0) {
-      setPersistedTabs(tabsWithKeywords);
-    }
-  }, [
-    tabs,
-    tabsWithKeywords,
-    settings.selectedCategories,
-    settings.customKeywords,
-    settings.whitelistedDomains
-  ]);
+    setPersistedTabs(tabsWithKeywords);
+  }, [hasFetched, tabs, keywordsKey]);
 
   return {
     tabs: persistedTabs || [],

@@ -200,24 +200,42 @@ export default function SessionCleanerView() {
         </CardContent>
       </Card>
 
-      {/* Display tabs with keywords indicator */}
-      {(hasTabsWithKeywords || isLoadingPersistedTabs) && (
-        <Card sx={{ mb: 2, backgroundColor: "rgba(255, 193, 7, 0.1)" }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              px: 2,
-              py: 1
-            }}>
+      {/* Tab check status: checking / distracting tabs found / all clear */}
+      <Card
+        sx={{
+          mb: 2,
+          backgroundColor: isLoadingPersistedTabs
+            ? "rgba(158, 158, 158, 0.1)"
+            : hasTabsWithKeywords
+              ? "rgba(255, 193, 7, 0.1)"
+              : "rgba(76, 175, 80, 0.1)"
+        }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            px: 2,
+            py: 1
+          }}>
+          {isLoadingPersistedTabs ? (
+            <Typography variant="body2" color="textSecondary">
+              🔍 Checking open tabs...
+            </Typography>
+          ) : hasTabsWithKeywords ? (
             <Typography variant="body2" sx={{ color: "warning.light" }}>
               ⚠️ Found {tabsWithKeywords.length} tab
               {tabsWithKeywords.length !== 1 ? "s" : ""} with distracting
               content
             </Typography>
-          </Box>
-        </Card>
-      )}
+          ) : (
+            <Typography variant="body2" sx={{ color: "success.light" }}>
+              {closedTabsCount > 0
+                ? `✅ All clear! Closed ${closedTabsCount} distracting tab${closedTabsCount !== 1 ? "s" : ""}`
+                : "✅ No distracting tabs open"}
+            </Typography>
+          )}
+        </Box>
+      </Card>
 
       <Stack spacing={2} sx={{ alignItems: "center", pt: 2, pb: 2 }}>
         {/* Main session cleaner button */}
@@ -232,9 +250,11 @@ export default function SessionCleanerView() {
         <Typography variant="body2" sx={{ textAlign: "center" }}>
           {closeTabsMutation.isPending
             ? "Cleaning up tabs..."
-            : closedTabsCount > 0
-            ? `Closed ${closedTabsCount} distracting tabs`
-            : `Currently open tabs with distractions: ${tabsWithKeywords.length}`}
+            : hasTabsWithKeywords
+              ? `Currently open tabs with distractions: ${tabsWithKeywords.length}`
+              : closedTabsCount > 0
+                ? `Closed ${closedTabsCount} distracting tabs`
+                : "Nothing to clean right now"}
         </Typography>
 
         {/* Test notification button
