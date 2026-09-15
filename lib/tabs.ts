@@ -1,6 +1,6 @@
-function closeTabsByIds(tabIds: number[]) {
+function closeTabsByIds(tabIds: number[]): Promise<void> {
   return new Promise((resolve) => {
-    chrome.tabs.remove(tabIds, resolve);
+    chrome.tabs.remove(tabIds, () => resolve());
   });
 }
 
@@ -39,57 +39,39 @@ export async function cleanSession(
   // Add a small delay to simulate processing
   await new Promise((resolve) => setTimeout(resolve, 500));
 
-  return new Promise((resolve) => {
-    let message = "";
-    let tabIdsClosed: number[] = [];
-    let tabsClosed = 0;
+  const tabs = await chrome.tabs.query({});
 
-    chrome.tabs.query({}, (tabs) => {
-      // First, identify tabs to close
-      const tabsToClose = tabs.filter((tab) => {
-        const url = tab.url?.toLowerCase();
+  const tabsToClose = tabs.filter((tab) => {
+    const url = tab.url?.toLowerCase();
 
-        // Skip if URL doesn't exist
-        if (!url) {
-          return false;
-        }
+    if (!url) {
+      return false;
+    }
 
-        // Skip if URL is whitelisted
-        if (isUrlWhitelisted(url, whitelistedDomains)) {
-          return false;
-        }
+    if (isUrlWhitelisted(url, whitelistedDomains)) {
+      return false;
+    }
 
-        // Check if URL matches any keyword
-        return keywords.some((keyword) => url.includes(keyword.toLowerCase()));
-      });
-
-      // Update counts
-      tabsClosed = tabsToClose.length;
-      tabIdsClosed = tabsToClose
-        .map((tab) => tab.id)
-        .filter((id): id is number => id !== undefined);
-
-      // Log tabs to be closed
-      console.log(`Closing ${tabsClosed} tabs with matching keywords`);
-
-      // Close the tabs if any were found
-      if (tabIdsClosed.length > 0) {
-        chrome.tabs.remove(tabIdsClosed);
-      }
-
-      // Prepare response message
-      message = `Closed ${tabsClosed} tabs`;
-
-      // Resolve with response
-      const response: tabsClosingResponse = {
-        message: message,
-        tabIdsClosed: tabIdsClosed,
-        tabsClosed: tabsClosed
-      };
-
-      resolve(response);
-    });
+    return keywords.some((keyword) => url.includes(keyword.toLowerCase()));
   });
+
+  const tabIdsClosed = tabsToClose
+    .map((tab) => tab.id)
+    .filter((id): id is number => id !== undefined);
+  const tabsClosed = tabIdsClosed.length;
+
+  console.log(`Closing ${tabsClosed} tabs with matching keywords`);
+
+  // Wait for Chrome to actually remove the tabs so callers can re-query safely
+  if (tabIdsClosed.length > 0) {
+    await closeTabsByIds(tabIdsClosed);
+  }
+
+  return {
+    message: `Closed ${tabsClosed} tabs`,
+    tabIdsClosed,
+    tabsClosed
+  };
 }
 
 export async function getCurrentTab() {

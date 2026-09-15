@@ -9,7 +9,7 @@ import { Provider } from "react-redux";
 
 import PopUpTop from "~/views/pop-up-top";
 // Redux Store
-import { store } from "~store/store";
+import { store, storeReady } from "~store/store";
 import PopUpLayout from "~views/PopUpLayout";
 import { themeOptionsLight, themeOptionsDark } from "~mui-themes";
 
@@ -18,8 +18,21 @@ import "./style.css";
 function IndexPopup() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
+  // Hold rendering until redux state has been hydrated from storage so the
+  // popup never flashes default state (idle 25:00 timer, default settings).
+  const [isStoreReady, setIsStoreReady] = useState<boolean>(false);
   // Create a client
   const queryClient = new QueryClient();
+
+  React.useEffect(() => {
+    let cancelled = false;
+    storeReady.then(() => {
+      if (!cancelled) setIsStoreReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   React.useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -62,8 +75,12 @@ function IndexPopup() {
                 maxHeight: "600px",
                 overflow: "hidden"
               }}>
-              <PopUpTop />
-              <PopUpLayout />
+              {isStoreReady && (
+                <>
+                  <PopUpTop />
+                  <PopUpLayout />
+                </>
+              )}
             </Box>
             {/* configure global toast settings, like theme */}
             <Toaster

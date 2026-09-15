@@ -83,8 +83,9 @@ const getModeColor = (mode: TimerMode): string => {
   }
 };
 
-// Create storage instance outside component to avoid re-creation on every render
-const storage = new Storage();
+// Create storage instance outside component to avoid re-creation on every render.
+// Must use the same "local" area as the store and the background worker.
+const storage = new Storage({ area: "local" });
 
 export default function FocusModeView() {
   const dispatch = useDispatch();
@@ -143,16 +144,30 @@ export default function FocusModeView() {
   }, []); // Run only once on mount
 
   // Local tick for smooth 1-second UI updates while popup is open.
-  // The background timer persists state to storage every 5 seconds,
-  // so without this local tick the UI would only update every 5 seconds.
+  // tick derives timeRemaining from focus.sessionEndTime (wall-clock), so
+  // this can never drift from the background's completion alarm. It runs once
+  // immediately so the display is correct the instant the session is hydrated
+  // (or becomes visible again) instead of a full second later.
   useEffect(() => {
     if (focus.timerStatus !== "running") return;
+
+    dispatch(tick());
 
     const interval = setInterval(() => {
       dispatch(tick());
     }, 1000);
 
-    return () => clearInterval(interval);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        dispatch(tick());
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [focus.timerStatus, dispatch]);
 
   const handleStart = () => {
