@@ -50,3 +50,7 @@ dist/
 .claude/shell-snapshots/
 .claude/statsig/
 CLAUDE.local.md
+
+# bundle size reports
+bundle-stats.html
+bundle-stats.json
