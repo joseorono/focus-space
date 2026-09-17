@@ -58,7 +58,16 @@ The development build automatically reloads when you make changes to the source 
 pnpm build
 ```
 
-Creates a production-ready zip file in the `build` directory for Chrome Web Store submission.
+Creates a production build in `build/chrome-mv3-prod`.
+
+To produce the zip artifact for Chrome Web Store submission:
+
+```bash
+pnpm package
+```
+
+This wipes `build/chrome-mv3-prod`, rebuilds from scratch, and writes
+`build/chrome-mv3-prod.zip`.
 
 ## 🎨 Design Philosophy
 
@@ -91,6 +100,16 @@ For further guidance, [visit the Plasmo Documentation](https://docs.plasmo.com/)
 ## 📤 Deployment
 
 Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!
+
+## 🔒 Privacy
+
+FocusSpace collects nothing, transmits nothing, and makes no external network
+requests. All settings live in local extension storage. See [PRIVACY.md](PRIVACY.md)
+for the full policy and a per-permission justification.
+
+## ⚖️ License
+
+Licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE).
 
 ---
 

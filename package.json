@@ -1,9 +1,12 @@
 {
   "name": "clean-my-history",
-  "displayName": "FocusSpace",
-  "version": "0.0.1",
-  "description": "A productivity workspace cleaner that removes distractions from your history and tabs, preparing you for deep work.",
-  "author": " Jose Orono <joseomaker@gmail.com>",
+  "displayName": "FocusSpace: Pomodoro Timer, History Wipe & Tab Cleaner",
+  "version": "1.0.0",
+  "description": "Close distracting tabs, clear history, and stay in deep work with a Pomodoro timer. 100% local, open source, and zero tracking.",
+  "author": "Exologic LLC <exologicagency@gmail.com>",
+  "license": "GPL-3.0",
+  "homepage": "https://focusspace-web.vercel.app/",
+  "repository": "github:joseorono/focus-space",
   "scripts": {
     "predev": "node scripts/sync-onboarding.js",
     "sync-onboarding": "node scripts/sync-onboarding.js",
@@ -73,29 +76,17 @@
     "typescript": "5.2.2"
   },
   "manifest": {
-    "host_permissions": [
-      "https://*/*"
-    ],
+    "short_name": "FocusSpace",
+    "homepage_url": "https://focusspace-web.vercel.app/",
+    "author": {
+      "email": "joseomaker@gmail.com"
+    },
     "permissions": [
       "alarms",
-      "audio",
-      "bookmarks",
-      "browsingData",
-      "downloads",
       "history",
-      "tabs",
+      "notifications",
       "storage",
-      "notifications"
-    ],
-    "web_accessible_resources": [
-      {
-        "resources": [
-          "static/onboarding.html"
-        ],
-        "matches": [
-          "https://mail.google.com/*"
-        ]
-      }
+      "tabs"
     ]
   }
 }
