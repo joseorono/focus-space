@@ -1,5 +1,5 @@
 {
-  "name": "clean-my-history",
+  "name": "focus-space",
   "displayName": "FocusSpace: Pomodoro Timer, History Wipe & Tab Cleaner",
   "version": "1.0.0",
   "description": "Close distracting tabs, clear history, and stay in deep work with a Pomodoro timer. 100% local, open source, and zero tracking.",
@@ -12,8 +12,8 @@
     "sync-onboarding": "node scripts/sync-onboarding.js",
     "dev": "plasmo dev",
     "dev-verbose": "plasmo dev --verbose",
-    "build": "plasmo build",
-    "package": "node -e \"require('fs').rmSync('build/chrome-mv3-prod',{recursive:true,force:true})\" && plasmo build && plasmo package",
+    "build": "plasmo build && node scripts/sync-onboarding.js prod",
+    "package": "node -e \"require('fs').rmSync('build/chrome-mv3-prod',{recursive:true,force:true})\" && plasmo build && node scripts/sync-onboarding.js prod && plasmo package",
     "test": "plasmo test",
     "dev-expose-host": "vite --host",
     "dev-expose-port": "vite --port",
@@ -78,9 +78,6 @@
   "manifest": {
     "short_name": "FocusSpace",
     "homepage_url": "https://focusspace-web.vercel.app/",
-    "author": {
-      "email": "joseomaker@gmail.com"
-    },
     "permissions": [
       "alarms",
       "history",

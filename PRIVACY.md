@@ -2,7 +2,7 @@
 
 **Effective date:** September 17, 2026
 **Extension:** FocusSpace: Pomodoro Timer, History Wipe & Tab Cleaner
-**Publisher:** Jose Orono (Exologic)
+**Publisher:** Exologic LLC
 
 ## Summary
 
