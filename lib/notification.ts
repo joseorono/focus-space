@@ -25,7 +25,7 @@ export const sendNotification = async (tabCount: number, customMessage?: string)
     const notification = await new Notification("FocusSpace", {
       icon: chrome.runtime.getURL("icon.png"),
       body,
-      tag: "clean-my-history-alert",
+      tag: "focus-space-alert",
       requireInteraction: false,
       silent: false
     });

@@ -54,7 +54,7 @@ _Límite estricto de Chrome: 132 caracteres._
 
 ### 🌐 URLs del Proyecto
 
-- **Website / Landing Page:** `https://focusspace.exologic.agency/` (o URL de producción de FocusSpace)
+- **Website / Landing Page:** `https://focusspace-web.vercel.app/` (o URL de producción de FocusSpace)
 - **Repository (GPLv3):** `https://github.com/joseorono/focus-space`
 - **Support / Issues URL:** `https://github.com/joseorono/focus-space/issues`
 

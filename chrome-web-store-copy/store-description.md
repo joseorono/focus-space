@@ -47,7 +47,7 @@ Every byte of processing happens locally in your browser. No servers. No analyti
 
 No paywall. No "pro" tier. No upsell. No email required. Install, configure once, use forever.
 
-GitHub: https://github.com/JoseOroOro/clean-my-history
+GitHub: https://github.com/joseorono/focus-space
 Made with care by The Exologic Team.
 ```
 
